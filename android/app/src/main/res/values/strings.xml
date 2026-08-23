@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">JeevaMitra</string>
+    <string name="title_activity_main">JeevaMitra</string>
+    <string name="package_name">com.jeevamitra.app</string>
+    <string name="custom_url_scheme">com.jeevamitra.app</string>
+</resources>
