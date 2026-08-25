@@ -75,27 +75,29 @@ export default function VetsList() {
         {locError && <div className="error-box">{locError}</div>}
 
         <p className="meta" style={{ margin: "0 0 6px" }}>Sector</p>
-        <div className="row" style={{ marginBottom: 10, flexWrap: "wrap" }}>
+        <div className="chip-row" style={{ marginBottom: 10 }}>
           {["all", "Government", "Private"].map((s) => (
-            <button key={s} className={sector === s ? "btn-primary" : "btn-secondary"} style={{ flex: "0 1 auto", padding: "8px 14px", fontSize: 12.5 }} onClick={() => setSector(s)}>
+            <button key={s} className={`chip ${sector === s ? "active" : ""}`} onClick={() => setSector(s)}>
               {s === "all" ? "All" : s}
             </button>
           ))}
         </div>
 
         <p className="meta" style={{ margin: "0 0 6px" }}>Designation</p>
-        <div className="row" style={{ marginBottom: 10, flexWrap: "wrap" }}>
+        <div className="chip-row" style={{ marginBottom: 10 }}>
           {["all", "Veterinary Officer", "Veterinary Assistant"].map((d) => (
-            <button key={d} className={designation === d ? "btn-primary" : "btn-secondary"} style={{ flex: "0 1 auto", padding: "8px 14px", fontSize: 12.5 }} onClick={() => setDesignation(d)}>
+            <button key={d} className={`chip ${designation === d ? "active" : ""}`} onClick={() => setDesignation(d)}>
               {d === "all" ? "All" : d}
             </button>
           ))}
         </div>
 
         {!myLoc && (
-          <button className={sortByRating ? "btn-primary" : "btn-secondary"} style={{ marginBottom: 14, fontSize: 12.5, padding: "8px 14px" }} onClick={() => setSortByRating((v) => !v)}>
-            Sort by rating {sortByRating ? "✓" : ""}
-          </button>
+          <div className="chip-row" style={{ marginBottom: 14 }}>
+            <button className={`chip ${sortByRating ? "active" : ""}`} onClick={() => setSortByRating((v) => !v)}>
+              Sort by rating {sortByRating ? "✓" : ""}
+            </button>
+          </div>
         )}
 
         {loading && <p className="meta">Loading vets...</p>}

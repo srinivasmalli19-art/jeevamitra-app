@@ -117,9 +117,9 @@ export default function AddVet() {
             </div>
           </div>
           <div className="field"><label>Services offered</label>
-            <div className="row" style={{ flexWrap: "wrap" }}>
+            <div className="chip-row">
               {ALL_SERVICES.map((s) => (
-                <button key={s} type="button" className={form.services.includes(s) ? "btn-primary" : "btn-secondary"} style={{ flex: "0 1 auto", fontSize: 11.5, padding: "7px 10px" }} onClick={() => toggle("services", s)}>
+                <button key={s} type="button" className={`chip ${form.services.includes(s) ? "active" : ""}`} onClick={() => toggle("services", s)}>
                   {s}
                 </button>
               ))}
@@ -135,9 +135,9 @@ export default function AddVet() {
           </div>
           <LocationPicker value={form} onChange={(next) => setForm((f) => ({ ...f, ...next }))} />
           <div className="field"><label>Languages spoken</label>
-            <div className="row">
+            <div className="chip-row">
               {ALL_LANGS.map((lang) => (
-                <button key={lang} type="button" className={form.languages.includes(lang) ? "btn-primary" : "btn-secondary"} style={{ fontSize: 12.5, padding: "8px 4px" }} onClick={() => toggle("languages", lang)}>
+                <button key={lang} type="button" className={`chip ${form.languages.includes(lang) ? "active" : ""}`} onClick={() => toggle("languages", lang)}>
                   {lang}
                 </button>
               ))}

@@ -50,6 +50,14 @@ input, select, textarea{font-family:'Work Sans', sans-serif;}
 .btn-danger{background:none;border:1.5px solid var(--alert); color:var(--alert); padding:12px; border-radius:12px; font-weight:700; cursor:pointer; width:100%;}
 .row{display:flex; gap:9px;}
 .row > *{flex:1;}
+.chip{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:8px 14px; border-radius:20px; border:1.3px solid var(--line);
+  background:var(--paper-card); font-size:12.5px; font-weight:600; color:var(--ink-soft);
+  cursor:pointer; flex:0 0 auto; width:auto;
+}
+.chip.active{background:var(--pasture); border-color:var(--pasture); color:var(--paper);}
+.chip-row{display:flex; gap:8px; flex-wrap:wrap;}
 .nav{display:flex; background:var(--paper-card); border-top:1px solid var(--line); position:sticky; bottom:0;}
 .nav a{flex:1; text-align:center; padding:10px 2px; text-decoration:none; color:var(--ink-soft); font-size:10px; font-weight:600;}
 .nav a.active{color:var(--pasture);}

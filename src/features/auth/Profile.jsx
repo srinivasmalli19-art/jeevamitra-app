@@ -44,16 +44,25 @@ export default function Profile() {
         </Link>
 
         <h3 style={{ fontSize: 15, margin: "18px 0 10px" }}>Profile type</h3>
-        {Object.entries(meta).map(([key, m]) => (
-          <div
-            key={key}
-            className="card"
-            style={{ borderColor: profile?.profileType === key ? "var(--pasture)" : "var(--line)" }}
-            onClick={() => updateProfileType(key)}
-          >
-            <div className="card-title">{m.emoji} {m.label}</div>
-          </div>
-        ))}
+        {Object.entries(meta).map(([key, m]) => {
+          const selected = profile?.profileType === key;
+          return (
+            <div
+              key={key}
+              className="card"
+              style={{
+                borderColor: selected ? "var(--pasture)" : "var(--line)",
+                borderWidth: selected ? 2 : 1,
+                background: selected ? "var(--pasture-pale)" : "var(--paper-card)",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}
+              onClick={() => updateProfileType(key)}
+            >
+              <div className="card-title" style={{ margin: 0 }}>{m.emoji} {m.label}</div>
+              {selected && <span style={{ color: "var(--pasture)", fontSize: 20, fontWeight: 700 }}>✓</span>}
+            </div>
+          );
+        })}
 
         <button className="btn-secondary" style={{ marginTop: 12 }} onClick={logout}>Log out</button>
       </div>

@@ -59,12 +59,11 @@ export default function AlertsList() {
         </button>
         {locError && <div className="error-box">{locError}</div>}
 
-        <div className="row" style={{ marginBottom: 14, flexWrap: "wrap" }}>
+        <div className="chip-row" style={{ marginBottom: 14 }}>
           {["all", "high", "medium", "low"].map((s) => (
             <button
               key={s}
-              className={filter === s ? "btn-primary" : "btn-secondary"}
-              style={{ flex: "0 1 auto", padding: "8px 14px", fontSize: 12.5 }}
+              className={`chip ${filter === s ? "active" : ""}`}
               onClick={() => setFilter(s)}
             >
               {s === "all" ? "All" : s[0].toUpperCase() + s.slice(1)}
