@@ -26,10 +26,17 @@ export default function MyLands() {
         )}
         {lands.map((l) => (
           <Link key={l.id} to={`/lands/${l.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-            <div className="card">
-              <div className="card-title">{l.title}</div>
-              <div className="meta">{l.village}, {l.district} · {l.acres} acres</div>
-              <div className="price" style={{ marginTop: 6 }}>₹{l.price}/{l.unit}</div>
+            <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+              {l.photoUrl ? (
+                <img src={l.photoUrl} alt={l.title} style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 10, flexShrink: 0 }} />
+              ) : (
+                <div className="land-thumb-fallback" style={{ width: 64, height: 64 }}>🌾</div>
+              )}
+              <div>
+                <div className="card-title">{l.title}</div>
+                <div className="meta">{l.village}, {l.district} · {l.acres} acres</div>
+                <div className="price" style={{ marginTop: 6 }}>₹{l.price}/{l.unit}</div>
+              </div>
             </div>
           </Link>
         ))}

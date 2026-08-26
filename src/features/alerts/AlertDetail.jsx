@@ -3,12 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getAlert, withdrawAlert } from "./alertsApi";
 import { useAuth } from "../../context/AuthContext";
 import { directionsUrl } from "../../utils/geo";
+import { useToast } from "../../components/ToastContext";
 import BottomNav from "../../components/BottomNav";
 
 export default function AlertDetail() {
   const { id } = useParams();
   const nav = useNavigate();
   const { user } = useAuth();
+  const showToast = useToast();
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,6 +27,7 @@ export default function AlertDetail() {
   async function handleWithdraw() {
     if (!confirm("Withdraw this alert? It will no longer show to others.")) return;
     await withdrawAlert(alert.id);
+    showToast("Alert withdrawn");
     nav("/alerts");
   }
 

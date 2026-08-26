@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { listMyNotifications } from "../notifications/notificationsApi";
+import Avatar from "../../components/Avatar";
 import BottomNav from "../../components/BottomNav";
 
 const meta = {
@@ -24,12 +25,13 @@ export default function Profile() {
     <div className="app-shell">
       <div className="topbar"><h1>Profile</h1></div>
       <div className="content">
-        <div className="card" style={{ cursor: "default" }}>
+        <div className="card" style={{ cursor: "default", display: "flex", gap: 14, alignItems: "center" }}>
+          <Avatar name={profile?.name} photoUrl={profile?.photoUrl} size={54} />
           {profile?.name ? (
-            <>
-              <div className="card-title">{profile.name}</div>
+            <div>
+              <div className="card-title" style={{ margin: 0 }}>{profile.name}</div>
               <div className="meta">{profile.village}, {profile.district}</div>
-            </>
+            </div>
           ) : (
             <div className="meta">No profile info saved yet — tap "Edit profile" below.</div>
           )}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { createVetProfile } from "./vetsApi";
 import { useAuth } from "../../context/AuthContext";
@@ -6,6 +6,7 @@ import { getCurrentPosition } from "../../utils/geo";
 import { compressImageToDataUrl } from "../../utils/image";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
+import { useToast } from "../../components/ToastContext";
 import BottomNav from "../../components/BottomNav";
 
 const ALL_LANGS = ["Telugu", "English", "Hindi"];
@@ -13,6 +14,7 @@ const ALL_SERVICES = ["General Checkup", "Vaccination", "First Aid", "Artificial
 
 export default function AddVet() {
   const { user, isAdmin, loading } = useAuth();
+  const showToast = useToast();
   const nav = useNavigate();
   const [form, setForm] = useState({
     name: "", sector: "Government", designation: "Veterinary Officer",
@@ -81,6 +83,7 @@ export default function AddVet() {
       const district = form.district === OTHER_DISTRICT ? form.districtOther : form.district;
       const id = await createVetProfile(user.uid, { ...form, district, photoUrl });
       nav(`/vets/${id}`);
+      showToast("Vet added to directory");
     } finally {
       setBusy(false);
       setUploadStatus("");

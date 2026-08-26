@@ -6,10 +6,12 @@ import { getCurrentPosition } from "../../utils/geo";
 import { compressImageToDataUrl } from "../../utils/image";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
+import { useToast } from "../../components/ToastContext";
 import BottomNav from "../../components/BottomNav";
 
 export default function AddLand() {
   const { user } = useAuth();
+  const showToast = useToast();
   const nav = useNavigate();
   const [form, setForm] = useState({
     title: "", acres: "", price: "", description: "", lat: null, lng: null,
@@ -70,6 +72,7 @@ export default function AddLand() {
         photoUrl,
       });
       nav(`/lands/${id}`);
+      showToast("Land listing saved!");
     } finally {
       setBusy(false);
       setUploadStatus("");

@@ -70,8 +70,10 @@ export default function LandsList() {
           return (
             <Link key={l.id} to={`/lands/${l.id}`} style={{ textDecoration: "none", color: "inherit" }}>
               <div className="card">
-                {l.photoUrl && (
+                {l.photoUrl ? (
                   <img src={l.photoUrl} alt={l.title} style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 10, marginBottom: 10 }} />
+                ) : (
+                  <div className="land-thumb-fallback" style={{ width: "100%", height: 90, marginBottom: 10 }}>🌾</div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <div>

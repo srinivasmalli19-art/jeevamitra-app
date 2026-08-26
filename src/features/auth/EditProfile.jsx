@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
+import { useToast } from "../../components/ToastContext";
 import BottomNav from "../../components/BottomNav";
 
 export default function EditProfile() {
   const { profile, saveProfile } = useAuth();
+  const showToast = useToast();
   const nav = useNavigate();
   const [name, setName] = useState(profile?.name || "");
   const [location, setLocation] = useState({
@@ -25,6 +27,7 @@ export default function EditProfile() {
       const district = location.district === OTHER_DISTRICT ? location.districtOther : location.district;
       await saveProfile({ name, ...location, district });
       nav("/profile");
+      showToast("Profile saved");
     } finally {
       setBusy(false);
     }

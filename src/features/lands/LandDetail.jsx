@@ -4,12 +4,14 @@ import { getLand, deleteLand } from "./landsApi";
 import { requestBooking } from "./bookingsApi";
 import { useAuth } from "../../context/AuthContext";
 import { directionsUrl, whatsappShareUrl } from "../../utils/geo";
+import { useToast } from "../../components/ToastContext";
 import BottomNav from "../../components/BottomNav";
 
 export default function LandDetail() {
   const { id } = useParams();
   const nav = useNavigate();
   const { user, profile } = useAuth();
+  const showToast = useToast();
   const [land, setLand] = useState(null);
   const [loading, setLoading] = useState(true);
   const [from, setFrom] = useState("");
@@ -46,6 +48,7 @@ export default function LandDetail() {
         from, to,
       });
       setMsg("Booking request sent to the owner.");
+      showToast("Booking request sent!");
     } catch (err) {
       setMsg(err.message);
     } finally {
@@ -56,6 +59,7 @@ export default function LandDetail() {
   async function handleDelete() {
     if (!confirm("Delete this land listing?")) return;
     await deleteLand(land.id);
+    showToast("Listing deleted");
     nav("/lands/mine");
   }
 
@@ -63,8 +67,10 @@ export default function LandDetail() {
     <div className="app-shell">
       <div className="topbar"><h1>{land.title}</h1><div className="sub">{land.village}, {land.district}</div></div>
       <div className="content">
-        {land.photoUrl && (
+        {land.photoUrl ? (
           <img src={land.photoUrl} alt={land.title} style={{ width: "100%", height: 200, objectFit: "cover", borderRadius: 14, marginBottom: 14 }} />
+        ) : (
+          <div className="land-thumb-fallback" style={{ width: "100%", height: 140, marginBottom: 14, fontSize: 44 }}>🌾</div>
         )}
         <div className="card" style={{ cursor: "default" }}>
           <div className="meta">Acres: <b>{land.acres}</b></div>

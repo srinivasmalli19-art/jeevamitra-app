@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { listMyBookings, listBookingRequestsForOwner, acceptBooking, rejectBooking, cancelBooking } from "./bookingsApi";
 import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../components/ToastContext";
 import BottomNav from "../../components/BottomNav";
 
 function StatusPill({ status }) {
@@ -10,6 +11,7 @@ function StatusPill({ status }) {
 
 export default function Bookings() {
   const { user } = useAuth();
+  const showToast = useToast();
   const [tab, setTab] = useState("mine");
   const [mine, setMine] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -29,6 +31,7 @@ export default function Bookings() {
     setErrMsg("");
     try {
       await acceptBooking(b.id, b);
+      showToast("Booking confirmed!");
       await refresh();
     } catch (err) {
       setErrMsg(err.message);
@@ -36,10 +39,12 @@ export default function Bookings() {
   }
   async function handleReject(b) {
     await rejectBooking(b.id, b);
+    showToast("Booking request rejected");
     await refresh();
   }
   async function handleCancel(b) {
     await cancelBooking(b.id, b);
+    showToast("Booking cancelled");
     await refresh();
   }
 

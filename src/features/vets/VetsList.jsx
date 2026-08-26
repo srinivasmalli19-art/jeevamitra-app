@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { listVets } from "./vetsApi";
 import { useAuth } from "../../context/AuthContext";
 import { getCurrentPosition, distanceKm } from "../../utils/geo";
+import Avatar from "../../components/Avatar";
 import BottomNav from "../../components/BottomNav";
 
 export default function VetsList() {
@@ -106,17 +107,17 @@ export default function VetsList() {
         )}
         {filtered.map((v) => (
           <Link key={v.id} to={`/vets/${v.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-            <div className="card">
-              {v.photoUrl && (
-                <img src={v.photoUrl} alt={v.name} style={{ width: "100%", height: 130, objectFit: "cover", borderRadius: 10, marginBottom: 10 }} />
-              )}
-              <div className="card-title">{v.name}</div>
-              <div className="meta">{v.designation} · {v.experienceYears} yrs exp</div>
-              <div style={{ marginTop: 6 }}>
-                <span className={`pill ${v.sector === "Government" ? "pill-sky" : "pill-gold"}`}>{v.sector}</span>{" "}
-                {v.rating && <span className="pill pill-green">★ {v.rating}</span>}{" "}
-                {myLoc && v._dist !== null && <span className="pill pill-sky">{v._dist.toFixed(1)} km away</span>}{" "}
-                <span className="meta" style={{ display: "inline" }}>{v.village}, {v.district}</span>
+            <div className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+              <Avatar name={v.name} photoUrl={v.photoUrl} size={54} />
+              <div>
+                <div className="card-title">{v.name}</div>
+                <div className="meta">{v.designation} · {v.experienceYears} yrs exp</div>
+                <div style={{ marginTop: 6 }}>
+                  <span className={`pill ${v.sector === "Government" ? "pill-sky" : "pill-gold"}`}>{v.sector}</span>{" "}
+                  {v.rating && <span className="pill pill-green">★ {v.rating}</span>}{" "}
+                  {myLoc && v._dist !== null && <span className="pill pill-sky">{v._dist.toFixed(1)} km away</span>}{" "}
+                  <span className="meta" style={{ display: "inline" }}>{v.village}, {v.district}</span>
+                </div>
               </div>
             </div>
           </Link>

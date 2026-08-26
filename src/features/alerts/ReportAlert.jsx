@@ -5,11 +5,13 @@ import { useAuth } from "../../context/AuthContext";
 import { getCurrentPosition } from "../../utils/geo";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
+import { useToast } from "../../components/ToastContext";
 import BottomNav from "../../components/BottomNav";
 
 export default function ReportAlert() {
   const { user, profile } = useAuth();
   const nav = useNavigate();
+  const showToast = useToast();
   const [form, setForm] = useState({
     disease: "", species: "Cattle", severity: "medium", symptoms: "",
     lat: null, lng: null,
@@ -44,6 +46,7 @@ export default function ReportAlert() {
       const district = form.district === OTHER_DISTRICT ? form.districtOther : form.district;
       const id = await createAlert(user.uid, profile?.name || "Someone", { ...form, district });
       nav(`/alerts/${id}`);
+      showToast("Alert reported to your community");
     } finally {
       setBusy(false);
     }

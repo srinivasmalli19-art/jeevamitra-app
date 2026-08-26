@@ -3,12 +3,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getVet, deleteVetProfile } from "./vetsApi";
 import { useAuth } from "../../context/AuthContext";
 import { directionsUrl } from "../../utils/geo";
+import { useToast } from "../../components/ToastContext";
+import Avatar from "../../components/Avatar";
 import BottomNav from "../../components/BottomNav";
 
 export default function VetDetail() {
   const { id } = useParams();
   const nav = useNavigate();
   const { isAdmin } = useAuth();
+  const showToast = useToast();
   const [vet, setVet] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -22,6 +25,7 @@ export default function VetDetail() {
   async function handleDelete() {
     if (!confirm("Remove this vet from the directory?")) return;
     await deleteVetProfile(vet.id);
+    showToast("Vet removed from directory");
     nav("/vets");
   }
 
@@ -29,12 +33,12 @@ export default function VetDetail() {
     <div className="app-shell">
       <div className="topbar"><h1>{vet.name}</h1><div className="sub">{vet.designation}</div></div>
       <div className="content">
-        {vet.photoUrl && (
-          <img src={vet.photoUrl} alt={vet.name} style={{ width: "100%", height: 200, objectFit: "cover", borderRadius: 14, marginBottom: 14 }} />
-        )}
-        <div style={{ marginBottom: 10 }}>
-          <span className={`pill ${vet.sector === "Government" ? "pill-sky" : "pill-gold"}`}>{vet.sector}</span>{" "}
-          {vet.rating && <span className="pill pill-green">★ {vet.rating}</span>}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+          <Avatar name={vet.name} photoUrl={vet.photoUrl} size={72} />
+          <div>
+            <span className={`pill ${vet.sector === "Government" ? "pill-sky" : "pill-gold"}`}>{vet.sector}</span>{" "}
+            {vet.rating && <span className="pill pill-green">★ {vet.rating}</span>}
+          </div>
         </div>
         <div className="card" style={{ cursor: "default" }}>
           <div className="meta">Experience: <b>{vet.experienceYears} years</b></div>
