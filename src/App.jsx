@@ -7,10 +7,10 @@ import Login from "./features/auth/Login";
 import Signup from "./features/auth/Signup";
 import Profile from "./features/auth/Profile";
 import EditProfile from "./features/auth/EditProfile";
-import Notifications from "./features/notifications/Notifications";
-import LandsList from "./features/lands/LandsList";
+import Home from "./features/home/Home";
+import Map from "./features/map/Map";
+import Lands from "./features/lands/Lands";
 import LandDetail from "./features/lands/LandDetail";
-import MyLands from "./features/lands/MyLands";
 import AddLand from "./features/lands/AddLand";
 import Bookings from "./features/lands/Bookings";
 import AlertsList from "./features/alerts/AlertsList";
@@ -39,8 +39,10 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/lands" element={<Protected><LandsList /></Protected>} />
-        <Route path="/lands/mine" element={<Protected><MyLands /></Protected>} />
+        <Route path="/" element={<Protected><Home /></Protected>} />
+        <Route path="/map" element={<Protected><Map /></Protected>} />
+        <Route path="/lands" element={<Protected><Lands /></Protected>} />
+        <Route path="/lands/mine" element={<Protected><Lands initialTab="mine" /></Protected>} />
         <Route path="/lands/new" element={<Protected><AddLand /></Protected>} />
         <Route path="/lands/:id" element={<Protected><LandDetail /></Protected>} />
         <Route path="/bookings" element={<Protected><Bookings /></Protected>} />
@@ -52,8 +54,7 @@ export default function App() {
         <Route path="/vets/:id" element={<Protected><VetDetail /></Protected>} />
         <Route path="/profile" element={<Protected><Profile /></Protected>} />
         <Route path="/profile/edit" element={<Protected><EditProfile /></Protected>} />
-        <Route path="/notifications" element={<Protected><Notifications /></Protected>} />
-        <Route path="*" element={<Navigate to="/lands" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );

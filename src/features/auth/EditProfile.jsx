@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
 import { useToast } from "../../components/ToastContext";
+import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
 export default function EditProfile() {
@@ -35,7 +36,7 @@ export default function EditProfile() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>Edit profile</h1></div>
+      <AppBar variant="detail" title="Edit profile" onBack={() => nav(-1)} />
       <div className="content">
         {!profile?.name && (
           <div className="error-box" style={{ background: "var(--pasture-pale)", color: "var(--pasture)" }}>

@@ -4,6 +4,7 @@ import { getAlert, withdrawAlert } from "./alertsApi";
 import { useAuth } from "../../context/AuthContext";
 import { directionsUrl } from "../../utils/geo";
 import { useToast } from "../../components/ToastContext";
+import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
 export default function AlertDetail() {
@@ -33,13 +34,15 @@ export default function AlertDetail() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>{alert.disease}</h1><div className="sub">{alert.village}, {alert.district}</div></div>
+      <AppBar variant="detail" title="Alert details" onBack={() => nav(-1)} />
       <div className="content">
-        <div style={{ marginBottom: 10 }}><span className={`pill ${sevPill}`}>{alert.severity[0].toUpperCase() + alert.severity.slice(1)} severity</span></div>
+        <div style={{ marginBottom: 8 }}><span className={`pill ${sevPill}`}>{alert.severity[0].toUpperCase() + alert.severity.slice(1)} severity</span></div>
+        <h1 className="page-title" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, margin: "0 0 4px" }}>{alert.disease}</h1>
+        <div className="meta" style={{ marginBottom: 14 }}>{alert.species} · {alert.village}, {alert.district}</div>
         <div className="card" style={{ cursor: "default" }}>
-          <div className="meta">Species: <b>{alert.species}</b></div>
-          <div className="meta">Reported by: <b>{alert.reporterName}</b></div>
-          <div className="meta">Location: <b>{alert.village}</b></div>
+          <div className="kv-row"><span className="k">Reported by</span><span className="v">{alert.reporterName}</span></div>
+          <div className="kv-row"><span className="k">Species</span><span className="v">{alert.species}</span></div>
+          <div className="kv-row"><span className="k">Location</span><span className="v">{alert.village}</span></div>
         </div>
         {alert.symptoms && (
           <div className="card" style={{ cursor: "default" }}>

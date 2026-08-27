@@ -7,6 +7,7 @@ import { compressImageToDataUrl } from "../../utils/image";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
 import { useToast } from "../../components/ToastContext";
+import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
 const ALL_LANGS = ["Telugu", "English", "Hindi"];
@@ -92,7 +93,7 @@ export default function AddVet() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>Add vet</h1><div className="sub">Admin only — curated directory entry</div></div>
+      <AppBar variant="detail" title="Add vet" onBack={() => nav(-1)} />
       <div className="content">
         <form onSubmit={handleSubmit}>
           <div className="field"><label>Full name</label>

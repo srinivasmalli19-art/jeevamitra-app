@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { listVets } from "./vetsApi";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../i18n/LanguageContext";
 import { getCurrentPosition, distanceKm } from "../../utils/geo";
+import { listMyNotifications } from "../notifications/notificationsApi";
 import Avatar from "../../components/Avatar";
+import AppBar from "../../components/AppBar";
+import BottomSheet from "../../components/BottomSheet";
 import BottomNav from "../../components/BottomNav";
+import NotificationsSheet from "../notifications/NotificationsSheet";
 
 export default function VetsList() {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
+  const { t } = useLanguage();
+  const nav = useNavigate();
   const [vets, setVets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
@@ -17,10 +24,17 @@ export default function VetsList() {
   const [myLoc, setMyLoc] = useState(null);
   const [locating, setLocating] = useState(false);
   const [locError, setLocError] = useState("");
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
 
   useEffect(() => {
     listVets().then((data) => { setVets(data); setLoading(false); });
   }, []);
+  useEffect(() => {
+    listMyNotifications(user.uid)
+      .then((data) => setUnread(data.filter((n) => !n.read).length))
+      .catch(() => setUnread(0));
+  }, [user.uid]);
 
   async function handleFindNearMe() {
     setLocating(true);
@@ -58,7 +72,14 @@ export default function VetsList() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>Vets</h1><div className="sub">Veterinary directory</div></div>
+      <AppBar
+        variant="top"
+        title={t("vets_title")}
+        subtitle={t("vets_subtitle")}
+        onMap={() => nav("/map")}
+        onBell={() => setNotifOpen(true)}
+        unread={unread > 0}
+      />
       <div className="content">
         {isAdmin && (
           <Link to="/vets/new" style={{ textDecoration: "none" }}>
@@ -66,7 +87,8 @@ export default function VetsList() {
           </Link>
         )}
 
-        <div className="field">
+        <div className="searchbar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" /></svg>
           <input placeholder="Search by name, village, or district" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
 
@@ -103,7 +125,7 @@ export default function VetsList() {
 
         {loading && <p className="meta">Loading vets...</p>}
         {!loading && filtered.length === 0 && (
-          <div className="empty"><h3>No vets match</h3><p>Try clearing filters, or check back later — the directory is maintained by JeevaMitra admins.</p></div>
+          <div className="empty-state"><div className="glyph">🩺</div><h3>No vets match</h3><p>Try clearing filters, or check back later — the directory is maintained by JeevaMitra admins.</p></div>
         )}
         {filtered.map((v) => (
           <Link key={v.id} to={`/vets/${v.id}`} style={{ textDecoration: "none", color: "inherit" }}>
@@ -123,6 +145,9 @@ export default function VetsList() {
           </Link>
         ))}
       </div>
+      <BottomSheet open={notifOpen} onClose={() => setNotifOpen(false)} title={t("notifications_title")}>
+        <NotificationsSheet />
+      </BottomSheet>
       <BottomNav />
     </div>
   );

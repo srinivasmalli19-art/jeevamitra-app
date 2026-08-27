@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../i18n/LanguageContext";
 import { listMyNotifications } from "../notifications/notificationsApi";
 import Avatar from "../../components/Avatar";
+import AppBar from "../../components/AppBar";
+import BottomSheet from "../../components/BottomSheet";
 import BottomNav from "../../components/BottomNav";
+import SettingsSheet from "../../components/SettingsSheet";
+import NotificationsSheet from "../notifications/NotificationsSheet";
 
 const meta = {
   livestock: { emoji: "🐄", label: "Livestock Owner" },
@@ -12,8 +17,12 @@ const meta = {
 };
 
 export default function Profile() {
-  const { user, profile, logout, updateProfileType } = useAuth();
+  const { user, profile, updateProfileType } = useAuth();
+  const { t } = useLanguage();
+  const nav = useNavigate();
   const [unread, setUnread] = useState(0);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     listMyNotifications(user.uid)
@@ -23,7 +32,13 @@ export default function Profile() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>Profile</h1></div>
+      <AppBar
+        variant="top"
+        title={t("profile_title")}
+        onMap={() => nav("/map")}
+        onBell={() => setNotifOpen(true)}
+        unread={unread > 0}
+      />
       <div className="content">
         <div className="card" style={{ cursor: "default", display: "flex", gap: 14, alignItems: "center" }}>
           <Avatar name={profile?.name} photoUrl={profile?.photoUrl} size={54} />
@@ -37,15 +52,16 @@ export default function Profile() {
           )}
         </div>
         <Link to="/profile/edit" style={{ textDecoration: "none" }}>
-          <button className="btn-secondary" style={{ marginTop: 10 }}>Edit profile</button>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>{t("edit_profile")}</button>
         </Link>
-        <Link to="/notifications" style={{ textDecoration: "none" }}>
-          <button className="btn-secondary" style={{ marginTop: 10 }}>
-            🔔 Notifications {unread > 0 && <span className="pill pill-gold" style={{ marginLeft: 6 }}>{unread} new</span>}
-          </button>
+        <Link to="/alerts" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>🚨 {t("profile_alerts_link")}</button>
         </Link>
+        <button className="btn-secondary" style={{ marginTop: 10 }} onClick={() => setSettingsOpen(true)}>
+          ⚙️ {t("settings_title")}
+        </button>
 
-        <h3 style={{ fontSize: 15, margin: "18px 0 10px" }}>Profile type</h3>
+        <h3 style={{ fontSize: 15, margin: "18px 0 10px" }}>{t("profile_type")}</h3>
         {Object.entries(meta).map(([key, m]) => {
           const selected = profile?.profileType === key;
           return (
@@ -65,9 +81,11 @@ export default function Profile() {
             </div>
           );
         })}
-
-        <button className="btn-secondary" style={{ marginTop: 12 }} onClick={logout}>Log out</button>
       </div>
+      <BottomSheet open={notifOpen} onClose={() => setNotifOpen(false)} title={t("notifications_title")}>
+        <NotificationsSheet />
+      </BottomSheet>
+      <SettingsSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <BottomNav />
     </div>
   );

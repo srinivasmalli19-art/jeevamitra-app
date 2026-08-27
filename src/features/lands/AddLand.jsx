@@ -7,6 +7,7 @@ import { compressImageToDataUrl } from "../../utils/image";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
 import { useToast } from "../../components/ToastContext";
+import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
 export default function AddLand() {
@@ -81,7 +82,7 @@ export default function AddLand() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>Post new land</h1></div>
+      <AppBar variant="detail" title="Post land" onBack={() => nav(-1)} />
       <div className="content">
         <form onSubmit={handleSubmit}>
           <div className="field"><label>Title</label>

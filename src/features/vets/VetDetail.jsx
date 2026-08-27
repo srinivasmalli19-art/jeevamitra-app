@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { directionsUrl } from "../../utils/geo";
 import { useToast } from "../../components/ToastContext";
 import Avatar from "../../components/Avatar";
+import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
 export default function VetDetail() {
@@ -31,20 +32,22 @@ export default function VetDetail() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>{vet.name}</h1><div className="sub">{vet.designation}</div></div>
+      <AppBar variant="detail" title="Vet profile" onBack={() => nav(-1)} />
       <div className="content">
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-          <Avatar name={vet.name} photoUrl={vet.photoUrl} size={72} />
+          <Avatar name={vet.name} photoUrl={vet.photoUrl} size={64} />
           <div>
+            <div className="card-title" style={{ margin: "0 0 4px" }}>{vet.name}</div>
+            <div className="meta" style={{ marginBottom: 6 }}>{vet.designation}</div>
             <span className={`pill ${vet.sector === "Government" ? "pill-sky" : "pill-gold"}`}>{vet.sector}</span>{" "}
             {vet.rating && <span className="pill pill-green">★ {vet.rating}</span>}
           </div>
         </div>
         <div className="card" style={{ cursor: "default" }}>
-          <div className="meta">Experience: <b>{vet.experienceYears} years</b></div>
-          <div className="meta">Languages: <b>{(vet.languages || []).join(", ")}</b></div>
-          <div className="meta">Availability: <b>{vet.availability}</b></div>
-          <div className="meta">Location: <b>{vet.village}, {vet.district}</b></div>
+          <div className="kv-row"><span className="k">Experience</span><span className="v">{vet.experienceYears} years</span></div>
+          <div className="kv-row"><span className="k">Languages</span><span className="v">{(vet.languages || []).join(", ")}</span></div>
+          <div className="kv-row"><span className="k">Availability</span><span className="v">{vet.availability}</span></div>
+          <div className="kv-row"><span className="k">Location</span><span className="v">{vet.village}, {vet.district}</span></div>
         </div>
         {vet.services && vet.services.length > 0 && (
           <div className="card" style={{ cursor: "default" }}>

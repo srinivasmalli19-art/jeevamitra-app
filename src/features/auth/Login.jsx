@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import AppBar from "../../components/AppBar";
 
 export default function Login() {
   const { login } = useAuth();
@@ -15,7 +16,7 @@ export default function Login() {
     setError(""); setLoading(true);
     try {
       await login(email, password);
-      nav("/lands");
+      nav("/");
     } catch (err) {
       setError(err.message.replace("Firebase: ", ""));
     } finally {
@@ -25,7 +26,7 @@ export default function Login() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>Welcome back</h1><div className="sub">JeevaMitra</div></div>
+      <AppBar variant="top" title="Welcome back" subtitle="JeevaMitra" />
       <div className="content">
         {error && <div className="error-box">{error}</div>}
         <form onSubmit={handleSubmit}>

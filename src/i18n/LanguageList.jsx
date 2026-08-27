@@ -1,0 +1,21 @@
+export default function LanguageList({ languages, current, onSelect }) {
+  return (
+    <div>
+      {languages.map((l) => (
+        <button
+          key={l.code}
+          onClick={() => onSelect(l.code)}
+          style={{
+            display: "flex", alignItems: "center", gap: 12, width: "100%",
+            padding: "14px 16px", marginBottom: 10, borderRadius: 12,
+            border: l.code === current ? "2px solid var(--pasture)" : "1.5px solid var(--line)",
+            background: l.code === current ? "var(--pasture-pale)" : "var(--paper-card)",
+            fontSize: 17, fontWeight: 600, cursor: "pointer", color: "var(--ink)",
+          }}
+        >
+          <span style={{ fontSize: 22 }}>{l.flag}</span> {l.nativeName}
+        </button>
+      ))}
+    </div>
+  );
+}

@@ -18,6 +18,7 @@ export const LANGUAGES = [
 export const translations = {
   en: {
     // Bottom nav
+    nav_home: "Home",
     nav_lands: "Lands", nav_myLands: "My Lands", nav_bookings: "Bookings",
     nav_vets: "Vets", nav_alerts: "Alerts", nav_profile: "Profile",
 
@@ -51,9 +52,34 @@ export const translations = {
     // Profile
     profile_title: "Profile", edit_profile: "Edit profile",
     profile_type: "Profile type", language: "Language",
+    profile_alerts_link: "Disease alerts",
+
+    // Home dashboard
+    home_stat_nearbyLands: "Nearby lands available", home_stat_myLands: "Lands you've posted",
+    home_stat_activeBookings: "Active bookings", home_stat_nearbyVets: "Vets nearby",
+    home_stat_diseaseAlerts: "Active high-severity alerts", home_stat_bookingRequests: "Booking requests waiting",
+    home_qa_postLand: "Post land", home_qa_findLand: "Find land",
+    home_qa_findVet: "Find vet", home_qa_reportAlert: "Report alert",
+    home_nearbyLands_title: "Nearby lands", home_alerts_title: "Disease alerts near you",
+    see_all: "See all",
+
+    // Map
+    map_title: "Map", map_subtitle: "Unified view",
+    map_caption: "Lands, vets and alerts near you, plotted together.",
+
+    // Settings sheet
+    settings_title: "Settings", settings_language: "Language", settings_notifications: "Notifications",
+    settings_units: "Units (acres / km)", settings_logout: "Log out",
+    delete_account: "Delete account", delete_account_confirm_toast: "Account deletion needs confirmation",
+
+    // Notifications sheet
+    notifications_title: "Notifications", mark_all_read: "Mark all as read",
+    no_notifications_title: "No notifications yet",
+    no_notifications_body: "You'll see updates here when someone acts on your bookings.",
   },
 
   te: {
+    nav_home: "హోమ్",
     nav_lands: "భూములు", nav_myLands: "నా భూములు", nav_bookings: "బుకింగ్‌లు",
     nav_vets: "వైద్యులు", nav_alerts: "హెచ్చరికలు", nav_profile: "ప్రొఫైల్",
 
@@ -80,9 +106,30 @@ export const translations = {
 
     profile_title: "ప్రొఫైల్", edit_profile: "ప్రొఫైల్ మార్చండి",
     profile_type: "ప్రొఫైల్ రకం", language: "భాష",
+    profile_alerts_link: "వ్యాధి హెచ్చరికలు",
+
+    home_stat_nearbyLands: "సమీపంలో అందుబాటులో ఉన్న భూములు", home_stat_myLands: "మీరు పోస్ట్ చేసిన భూములు",
+    home_stat_activeBookings: "సక్రియ బుకింగ్‌లు", home_stat_nearbyVets: "సమీప వైద్యులు",
+    home_stat_diseaseAlerts: "అధిక తీవ్రత హెచ్చరికలు", home_stat_bookingRequests: "వేచి ఉన్న బుకింగ్ అభ్యర్థనలు",
+    home_qa_postLand: "భూమి పోస్ట్ చేయండి", home_qa_findLand: "భూమి వెతకండి",
+    home_qa_findVet: "వైద్యుడిని వెతకండి", home_qa_reportAlert: "హెచ్చరిక నివేదించండి",
+    home_nearbyLands_title: "సమీప భూములు", home_alerts_title: "మీ సమీపంలో వ్యాధి హెచ్చరికలు",
+    see_all: "అన్నీ చూడండి",
+
+    map_title: "మ్యాప్", map_subtitle: "సమీకృత వీక్షణ",
+    map_caption: "మీ సమీపంలోని భూములు, వైద్యులు మరియు హెచ్చరికలు కలిపి చూపబడ్డాయి.",
+
+    settings_title: "సెట్టింగ్‌లు", settings_language: "భాష", settings_notifications: "నోటిఫికేషన్‌లు",
+    settings_units: "యూనిట్లు (ఎకరాలు / కి.మీ.)", settings_logout: "లాగ్ అవుట్",
+    delete_account: "ఖాతాను తొలగించండి", delete_account_confirm_toast: "ఖాతా తొలగింపుకు నిర్ధారణ అవసరం",
+
+    notifications_title: "నోటిఫికేషన్‌లు", mark_all_read: "అన్నీ చదివినట్లు గుర్తించండి",
+    no_notifications_title: "ఇంకా నోటిఫికేషన్‌లు లేవు",
+    no_notifications_body: "మీ బుకింగ్‌లపై ఎవరైనా చర్య తీసుకున్నప్పుడు అప్‌డేట్‌లు ఇక్కడ కనిపిస్తాయి.",
   },
 
   hi: {
+    nav_home: "होम",
     nav_lands: "ज़मीनें", nav_myLands: "मेरी ज़मीनें", nav_bookings: "बुकिंग",
     nav_vets: "पशु चिकित्सक", nav_alerts: "चेतावनियाँ", nav_profile: "प्रोफ़ाइल",
 
@@ -109,5 +156,25 @@ export const translations = {
 
     profile_title: "प्रोफ़ाइल", edit_profile: "प्रोफ़ाइल संपादित करें",
     profile_type: "प्रोफ़ाइल प्रकार", language: "भाषा",
+    profile_alerts_link: "रोग चेतावनियाँ",
+
+    home_stat_nearbyLands: "नज़दीक उपलब्ध ज़मीनें", home_stat_myLands: "आपकी पोस्ट की गई ज़मीनें",
+    home_stat_activeBookings: "सक्रिय बुकिंग", home_stat_nearbyVets: "नज़दीकी पशु चिकित्सक",
+    home_stat_diseaseAlerts: "उच्च गंभीरता वाली चेतावनियाँ", home_stat_bookingRequests: "लंबित बुकिंग अनुरोध",
+    home_qa_postLand: "ज़मीन पोस्ट करें", home_qa_findLand: "ज़मीन खोजें",
+    home_qa_findVet: "पशु चिकित्सक खोजें", home_qa_reportAlert: "चेतावनी दर्ज करें",
+    home_nearbyLands_title: "नज़दीकी ज़मीनें", home_alerts_title: "आपके नज़दीक रोग चेतावनियाँ",
+    see_all: "सभी देखें",
+
+    map_title: "मानचित्र", map_subtitle: "एकीकृत दृश्य",
+    map_caption: "आपके आस-पास की ज़मीनें, पशु चिकित्सक और चेतावनियाँ एक साथ दिखाई गई हैं।",
+
+    settings_title: "सेटिंग्स", settings_language: "भाषा", settings_notifications: "सूचनाएं",
+    settings_units: "इकाइयाँ (एकड़ / कि.मी.)", settings_logout: "लॉग आउट",
+    delete_account: "खाता हटाएं", delete_account_confirm_toast: "खाता हटाने के लिए पुष्टि आवश्यक है",
+
+    notifications_title: "सूचनाएं", mark_all_read: "सभी को पढ़ा हुआ चिह्नित करें",
+    no_notifications_title: "अभी तक कोई सूचना नहीं",
+    no_notifications_body: "जब कोई आपकी बुकिंग पर कार्रवाई करेगा, तो अपडेट यहां दिखाई देंगे।",
   },
 };

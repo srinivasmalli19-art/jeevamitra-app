@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { listMyBookings, listBookingRequestsForOwner, acceptBooking, rejectBooking, cancelBooking } from "./bookingsApi";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../i18n/LanguageContext";
 import { useToast } from "../../components/ToastContext";
+import { listMyNotifications } from "../notifications/notificationsApi";
+import AppBar from "../../components/AppBar";
+import BottomSheet from "../../components/BottomSheet";
 import BottomNav from "../../components/BottomNav";
+import NotificationsSheet from "../notifications/NotificationsSheet";
+import { useNavigate } from "react-router-dom";
 
 function StatusPill({ status }) {
   const map = { pending: "pill-gold", confirmed: "pill-green", rejected: "pill-red", cancelled: "pill-red" };
@@ -11,12 +17,16 @@ function StatusPill({ status }) {
 
 export default function Bookings() {
   const { user } = useAuth();
+  const { t } = useLanguage();
+  const nav = useNavigate();
   const showToast = useToast();
   const [tab, setTab] = useState("mine");
   const [mine, setMine] = useState([]);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState("");
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
 
   async function refresh() {
     setLoading(true);
@@ -26,6 +36,11 @@ export default function Bookings() {
   }
 
   useEffect(() => { refresh(); }, [user.uid]);
+  useEffect(() => {
+    listMyNotifications(user.uid)
+      .then((data) => setUnread(data.filter((n) => !n.read).length))
+      .catch(() => setUnread(0));
+  }, [user.uid]);
 
   async function handleAccept(b) {
     setErrMsg("");
@@ -50,18 +65,27 @@ export default function Bookings() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>Bookings</h1><div className="sub">Manage your requests</div></div>
+      <AppBar
+        variant="top"
+        title={t("bookings_title")}
+        subtitle="Manage your requests"
+        onMap={() => nav("/map")}
+        onBell={() => setNotifOpen(true)}
+        unread={unread > 0}
+      />
       <div className="content">
-        <div className="row" style={{ marginBottom: 14 }}>
-          <button className={tab === "mine" ? "btn-primary" : "btn-secondary"} onClick={() => setTab("mine")}>My bookings</button>
-          <button className={tab === "requests" ? "btn-primary" : "btn-secondary"} onClick={() => setTab("requests")}>Requests {requests.length > 0 && `(${requests.length})`}</button>
+        <div className="tabbar">
+          <button className={`tabbtn ${tab === "mine" ? "active" : ""}`} onClick={() => setTab("mine")}>{t("my_bookings")}</button>
+          <button className={`tabbtn ${tab === "requests" ? "active" : ""}`} onClick={() => setTab("requests")}>
+            {t("requests")} {requests.length > 0 && `(${requests.length})`}
+          </button>
         </div>
 
         {errMsg && <div className="error-box">{errMsg}</div>}
         {loading && <p className="meta">Loading...</p>}
 
         {!loading && tab === "mine" && (mine.length === 0
-          ? <div className="empty"><h3>No bookings yet</h3><p>Browse lands and send your first request.</p></div>
+          ? <div className="empty-state"><div className="glyph">📋</div><h3>No bookings yet</h3><p>Browse lands and send your first request.</p></div>
           : mine.map((b) => (
             <div key={b.id} className="card" style={{ cursor: "default" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -79,7 +103,7 @@ export default function Bookings() {
         )}
 
         {!loading && tab === "requests" && (requests.length === 0
-          ? <div className="empty"><h3>No requests waiting</h3><p>When someone wants to book your land, it'll show up here.</p></div>
+          ? <div className="empty-state"><div className="glyph">📥</div><h3>No requests waiting</h3><p>When someone wants to book your land, it'll show up here.</p></div>
           : requests.map((b) => (
             <div key={b.id} className="card" style={{ cursor: "default" }}>
               <div className="card-title">{b.landTitle}</div>
@@ -92,6 +116,9 @@ export default function Bookings() {
           ))
         )}
       </div>
+      <BottomSheet open={notifOpen} onClose={() => setNotifOpen(false)} title={t("notifications_title")}>
+        <NotificationsSheet />
+      </BottomSheet>
       <BottomNav />
     </div>
   );

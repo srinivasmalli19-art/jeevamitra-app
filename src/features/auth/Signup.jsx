@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
+import AppBar from "../../components/AppBar";
 
 export default function Signup() {
   const { signup } = useAuth();
@@ -23,7 +24,7 @@ export default function Signup() {
     try {
       const district = form.district === OTHER_DISTRICT ? form.districtOther : form.district;
       await signup({ ...form, district });
-      nav("/lands");
+      nav("/");
     } catch (err) {
       setError(err.message.replace("Firebase: ", ""));
     } finally {
@@ -33,7 +34,7 @@ export default function Signup() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>Create your account</h1><div className="sub">JeevaMitra</div></div>
+      <AppBar variant="top" title="Create your account" subtitle="JeevaMitra" />
       <div className="content">
         {error && <div className="error-box">{error}</div>}
         <form onSubmit={handleSubmit}>

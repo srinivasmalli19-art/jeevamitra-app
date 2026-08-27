@@ -6,6 +6,7 @@ import { getCurrentPosition } from "../../utils/geo";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
 import { useToast } from "../../components/ToastContext";
+import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
 export default function ReportAlert() {
@@ -54,7 +55,7 @@ export default function ReportAlert() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>Report disease alert</h1></div>
+      <AppBar variant="detail" title="Report disease alert" onBack={() => nav(-1)} />
       <div className="content">
         <form onSubmit={handleSubmit}>
           <div className="field"><label>Disease</label>

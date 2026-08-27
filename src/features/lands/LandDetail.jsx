@@ -5,6 +5,7 @@ import { requestBooking } from "./bookingsApi";
 import { useAuth } from "../../context/AuthContext";
 import { directionsUrl, whatsappShareUrl } from "../../utils/geo";
 import { useToast } from "../../components/ToastContext";
+import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
 export default function LandDetail() {
@@ -65,16 +66,20 @@ export default function LandDetail() {
 
   return (
     <div className="app-shell">
-      <div className="topbar"><h1>{land.title}</h1><div className="sub">{land.village}, {land.district}</div></div>
+      <AppBar variant="detail" title="Land details" onBack={() => nav(-1)} />
       <div className="content">
-        {land.photoUrl ? (
-          <img src={land.photoUrl} alt={land.title} style={{ width: "100%", height: 200, objectFit: "cover", borderRadius: 14, marginBottom: 14 }} />
-        ) : (
-          <div className="land-thumb-fallback" style={{ width: "100%", height: 140, marginBottom: 14, fontSize: 44 }}>🌾</div>
-        )}
+        <div
+          className="detail-hero"
+          style={land.photoUrl ? { backgroundImage: `url(${land.photoUrl})` } : undefined}
+        >
+          {!land.photoUrl && <span className="hero-emoji">🌾</span>}
+          <div className="hero-tag">{land.title}</div>
+        </div>
         <div className="card" style={{ cursor: "default" }}>
-          <div className="meta">Acres: <b>{land.acres}</b></div>
-          <div className="meta">Price: <span className="price">₹{land.price}/{land.unit}</span></div>
+          <div className="kv-row"><span className="k">Village</span><span className="v">{land.village}</span></div>
+          <div className="kv-row"><span className="k">District</span><span className="v">{land.district}</span></div>
+          <div className="kv-row"><span className="k">Acres</span><span className="v">{land.acres}</span></div>
+          <div className="kv-row"><span className="k">Price</span><span className="v">₹{land.price}/{land.unit}</span></div>
           {land.description && <p style={{ fontSize: 13.5, lineHeight: 1.6, marginTop: 10 }}>{land.description}</p>}
         </div>
 
@@ -82,7 +87,7 @@ export default function LandDetail() {
           <div className="card" style={{ cursor: "default" }}>
             <div className="card-title" style={{ fontSize: 13.5 }}>Confirmed blocked dates</div>
             {land.bookedRanges.map((r, i) => (
-              <div key={i} className="meta">{r.from} → {r.to}</div>
+              <div key={i} className="kv-row"><span className="k">Blocked</span><span className="v">{r.from} → {r.to}</span></div>
             ))}
           </div>
         )}
