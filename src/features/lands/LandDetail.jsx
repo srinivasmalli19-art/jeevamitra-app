@@ -83,6 +83,15 @@ export default function LandDetail() {
           {land.description && <p style={{ fontSize: 13.5, lineHeight: 1.6, marginTop: 10 }}>{land.description}</p>}
         </div>
 
+        {land.amenities && land.amenities.length > 0 && (
+          <div className="card" style={{ cursor: "default" }}>
+            <div className="card-title" style={{ fontSize: 13.5, marginBottom: 8 }}>Amenities</div>
+            {land.amenities.map((a) => (
+              <span key={a} className="pill pill-sky" style={{ marginRight: 6, marginBottom: 6, display: "inline-block" }}>{a}</span>
+            ))}
+          </div>
+        )}
+
         {(land.bookedRanges || []).length > 0 && (
           <div className="card" style={{ cursor: "default" }}>
             <div className="card-title" style={{ fontSize: 13.5 }}>Confirmed blocked dates</div>

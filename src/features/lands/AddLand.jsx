@@ -10,12 +10,14 @@ import { useToast } from "../../components/ToastContext";
 import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
+const ALL_AMENITIES = ["Water source", "Shade", "Fenced", "Borewell", "Electricity", "Road access"];
+
 export default function AddLand() {
   const { user } = useAuth();
   const showToast = useToast();
   const nav = useNavigate();
   const [form, setForm] = useState({
-    title: "", acres: "", price: "", description: "", lat: null, lng: null,
+    title: "", acres: "", price: "", description: "", amenities: [], lat: null, lng: null,
     state: "Andhra Pradesh", district: "", districtOther: "", mandal: "", village: "",
   });
   const [photoFile, setPhotoFile] = useState(null);
@@ -27,6 +29,12 @@ export default function AddLand() {
   const [locError, setLocError] = useState("");
 
   function set(k, v) { setForm((f) => ({ ...f, [k]: v })); }
+  function toggleAmenity(value) {
+    setForm((f) => ({
+      ...f,
+      amenities: f.amenities.includes(value) ? f.amenities.filter((x) => x !== value) : [...f.amenities, value],
+    }));
+  }
 
   function handlePhotoChange(e) {
     const file = e.target.files?.[0];
@@ -99,6 +107,15 @@ export default function AddLand() {
           </div>
           <div className="field"><label>Description</label>
             <textarea value={form.description} onChange={(e) => set("description", e.target.value)} />
+          </div>
+          <div className="field"><label>Amenities</label>
+            <div className="chip-row">
+              {ALL_AMENITIES.map((a) => (
+                <button key={a} type="button" className={`chip ${form.amenities.includes(a) ? "active" : ""}`} onClick={() => toggleAmenity(a)}>
+                  {a}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="field">
             <label>Photo</label>

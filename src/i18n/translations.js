@@ -10,9 +10,9 @@
 // another user has their app set to.
 
 export const LANGUAGES = [
-  { code: "en", nativeName: "English", flag: "🇬🇧" },
-  { code: "te", nativeName: "తెలుగు", flag: "🇮🇳" },
-  { code: "hi", nativeName: "हिन्दी", flag: "🇮🇳" },
+  { code: "en", nativeName: "English" },
+  { code: "te", nativeName: "తెలుగు" },
+  { code: "hi", nativeName: "हिन्दी" },
 ];
 
 export const translations = {
@@ -30,7 +30,7 @@ export const translations = {
     // Onboarding / auth
     welcome_title: "Welcome to JeevaMitra",
     login_title: "Welcome back", signup_title: "Create your account",
-    email: "Email", password: "Password", fullName: "Full name",
+    email: "Email", password: "Password", fullName: "Full name", phone: "Phone number",
     login_button: "Log in", signup_button: "Create account",
     no_account: "New here?", have_account: "Already have an account?",
 
@@ -53,6 +53,8 @@ export const translations = {
     profile_title: "Profile", edit_profile: "Edit profile",
     profile_type: "Profile type", language: "Language",
     profile_alerts_link: "Disease alerts",
+    profile_livestock_link: "My livestock", profile_landHoldings_link: "My land holdings",
+    profile_stories_link: "Success stories", profile_videos_link: "Videos",
 
     // Home dashboard
     home_stat_nearbyLands: "Nearby lands available", home_stat_myLands: "Lands you've posted",
@@ -61,6 +63,7 @@ export const translations = {
     home_qa_postLand: "Post land", home_qa_findLand: "Find land",
     home_qa_findVet: "Find vet", home_qa_reportAlert: "Report alert",
     home_nearbyLands_title: "Nearby lands", home_alerts_title: "Disease alerts near you",
+    home_yourBookings_title: "Bookings you made", home_yourPostedLands_title: "Lands you posted",
     see_all: "See all",
 
     // Map
@@ -89,7 +92,7 @@ export const translations = {
 
     welcome_title: "జీవమిత్రకు స్వాగతం",
     login_title: "తిరిగి స్వాగతం", signup_title: "మీ ఖాతాను సృష్టించండి",
-    email: "ఇమెయిల్", password: "పాస్‌వర్డ్", fullName: "పూర్తి పేరు",
+    email: "ఇమెయిల్", password: "పాస్‌వర్డ్", fullName: "పూర్తి పేరు", phone: "ఫోన్ నంబర్",
     login_button: "లాగిన్ చేయండి", signup_button: "ఖాతా సృష్టించండి",
     no_account: "కొత్తగా వచ్చారా?", have_account: "ఇప్పటికే ఖాతా ఉందా?",
 
@@ -107,6 +110,8 @@ export const translations = {
     profile_title: "ప్రొఫైల్", edit_profile: "ప్రొఫైల్ మార్చండి",
     profile_type: "ప్రొఫైల్ రకం", language: "భాష",
     profile_alerts_link: "వ్యాధి హెచ్చరికలు",
+    profile_livestock_link: "నా పశువులు", profile_landHoldings_link: "నా భూ రికార్డులు",
+    profile_stories_link: "విజయ గాథలు", profile_videos_link: "వీడియోలు",
 
     home_stat_nearbyLands: "సమీపంలో అందుబాటులో ఉన్న భూములు", home_stat_myLands: "మీరు పోస్ట్ చేసిన భూములు",
     home_stat_activeBookings: "సక్రియ బుకింగ్‌లు", home_stat_nearbyVets: "సమీప వైద్యులు",
@@ -114,6 +119,7 @@ export const translations = {
     home_qa_postLand: "భూమి పోస్ట్ చేయండి", home_qa_findLand: "భూమి వెతకండి",
     home_qa_findVet: "వైద్యుడిని వెతకండి", home_qa_reportAlert: "హెచ్చరిక నివేదించండి",
     home_nearbyLands_title: "సమీప భూములు", home_alerts_title: "మీ సమీపంలో వ్యాధి హెచ్చరికలు",
+    home_yourBookings_title: "మీరు చేసిన బుకింగ్‌లు", home_yourPostedLands_title: "మీరు పోస్ట్ చేసిన భూములు",
     see_all: "అన్నీ చూడండి",
 
     map_title: "మ్యాప్", map_subtitle: "సమీకృత వీక్షణ",
@@ -139,7 +145,7 @@ export const translations = {
 
     welcome_title: "जीवमित्र में आपका स्वागत है",
     login_title: "वापसी पर स्वागत है", signup_title: "अपना खाता बनाएं",
-    email: "ईमेल", password: "पासवर्ड", fullName: "पूरा नाम",
+    email: "ईमेल", password: "पासवर्ड", fullName: "पूरा नाम", phone: "फ़ोन नंबर",
     login_button: "लॉग इन करें", signup_button: "खाता बनाएं",
     no_account: "नए हैं?", have_account: "पहले से खाता है?",
 
@@ -157,6 +163,8 @@ export const translations = {
     profile_title: "प्रोफ़ाइल", edit_profile: "प्रोफ़ाइल संपादित करें",
     profile_type: "प्रोफ़ाइल प्रकार", language: "भाषा",
     profile_alerts_link: "रोग चेतावनियाँ",
+    profile_livestock_link: "मेरे पशुधन", profile_landHoldings_link: "मेरी भूमि रिकॉर्ड",
+    profile_stories_link: "सफलता की कहानियाँ", profile_videos_link: "वीडियो",
 
     home_stat_nearbyLands: "नज़दीक उपलब्ध ज़मीनें", home_stat_myLands: "आपकी पोस्ट की गई ज़मीनें",
     home_stat_activeBookings: "सक्रिय बुकिंग", home_stat_nearbyVets: "नज़दीकी पशु चिकित्सक",
@@ -164,6 +172,7 @@ export const translations = {
     home_qa_postLand: "ज़मीन पोस्ट करें", home_qa_findLand: "ज़मीन खोजें",
     home_qa_findVet: "पशु चिकित्सक खोजें", home_qa_reportAlert: "चेतावनी दर्ज करें",
     home_nearbyLands_title: "नज़दीकी ज़मीनें", home_alerts_title: "आपके नज़दीक रोग चेतावनियाँ",
+    home_yourBookings_title: "आपकी की गई बुकिंग", home_yourPostedLands_title: "आपकी पोस्ट की गई ज़मीनें",
     see_all: "सभी देखें",
 
     map_title: "मानचित्र", map_subtitle: "एकीकृत दृश्य",

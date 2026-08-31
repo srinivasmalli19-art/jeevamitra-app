@@ -60,6 +60,18 @@ export default function Profile() {
         <button className="btn-secondary" style={{ marginTop: 10 }} onClick={() => setSettingsOpen(true)}>
           ⚙️ {t("settings_title")}
         </button>
+        <Link to="/livestock" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>🐄 {t("profile_livestock_link")}</button>
+        </Link>
+        <Link to="/land-holdings" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>🌾 {t("profile_landHoldings_link")}</button>
+        </Link>
+        <Link to="/stories" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>📖 {t("profile_stories_link")}</button>
+        </Link>
+        <Link to="/videos" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>🎬 {t("profile_videos_link")}</button>
+        </Link>
 
         <h3 style={{ fontSize: 15, margin: "18px 0 10px" }}>{t("profile_type")}</h3>
         {Object.entries(meta).map(([key, m]) => {

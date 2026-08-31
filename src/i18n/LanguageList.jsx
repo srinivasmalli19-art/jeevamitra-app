@@ -13,7 +13,15 @@ export default function LanguageList({ languages, current, onSelect }) {
             fontSize: 17, fontWeight: 600, cursor: "pointer", color: "var(--ink)",
           }}
         >
-          <span style={{ fontSize: 22 }}>{l.flag}</span> {l.nativeName}
+          <span style={{
+            flex: "0 0 auto", width: 30, height: 30, borderRadius: "50%",
+            background: "var(--pasture)", color: "var(--paper)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "'JetBrains Mono',monospace", fontSize: 10.5, fontWeight: 700,
+          }}>
+            {l.code.toUpperCase()}
+          </span>
+          {l.nativeName}
         </button>
       ))}
     </div>

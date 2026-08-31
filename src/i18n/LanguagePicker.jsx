@@ -23,7 +23,15 @@ export default function LanguagePicker() {
               color: "var(--ink)",
             }}
           >
-            <span style={{ fontSize: 26 }}>{l.flag}</span> {l.nativeName}
+            <span style={{
+              flex: "0 0 auto", width: 34, height: 34, borderRadius: "50%",
+              background: "var(--pasture)", color: "var(--paper)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "'JetBrains Mono',monospace", fontSize: 11.5, fontWeight: 700,
+            }}>
+              {l.code.toUpperCase()}
+            </span>
+            {l.nativeName}
           </button>
         ))}
       </div>

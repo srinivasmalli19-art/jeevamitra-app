@@ -1,5 +1,5 @@
 import {
-  collection, addDoc, doc, getDocs, query, where, runTransaction,
+  collection, addDoc, doc, getDoc, getDocs, query, where, runTransaction,
   serverTimestamp, updateDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase/init";
@@ -93,12 +93,19 @@ export async function cancelBooking(bookingId, booking) {
   await tryNotify(booking.requesterId, `The booking for "${booking.landTitle}" (${booking.from} → ${booking.to}) was cancelled.`);
 }
 
+export async function getBooking(bookingId) {
+  const snap = await getDoc(doc(db, "bookings", bookingId));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+
 export async function listMyBookings(requesterId) {
   const snap = await getDocs(query(bookingsCol, where("requesterId", "==", requesterId)));
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
+// All bookings against this owner's lands — pending ones need Accept/Reject,
+// confirmed ones surface the requester's contact details (see Bookings.jsx).
 export async function listBookingRequestsForOwner(ownerId) {
-  const snap = await getDocs(query(bookingsCol, where("ownerId", "==", ownerId), where("status", "==", "pending")));
+  const snap = await getDocs(query(bookingsCol, where("ownerId", "==", ownerId)));
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }

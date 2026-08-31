@@ -4,10 +4,14 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  deleteUser,
 } from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../firebase/init";
 import { isCurrentUserAdmin } from "../features/vets/vetsApi";
+import { listMyLands, deleteLand } from "../features/lands/landsApi";
 
 const AuthContext = createContext(null);
 
@@ -33,10 +37,11 @@ export function AuthProvider({ children }) {
     return unsub;
   }, []);
 
-  async function signup({ email, password, name, state, district, mandal, village, profileType }) {
+  async function signup({ email, password, name, phone, state, district, mandal, village, profileType }) {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const userDoc = {
       name,
+      phone,
       state,
       district,
       mandal,
@@ -66,13 +71,29 @@ export function AuthProvider({ children }) {
   // Saves name/village/district. Uses merge so it also REPAIRS accounts
   // whose profile document never got created (e.g. if signup failed
   // partway through before Firestore rules were fixed).
-  async function saveProfile({ name, state, district, mandal, village }) {
+  async function saveProfile({ name, phone, state, district, mandal, village }) {
     if (!user) return;
-    await setDoc(doc(db, "users", user.uid), { name, state, district, mandal, village }, { merge: true });
-    setProfile((p) => ({ ...(p || {}), name, state, district, mandal, village }));
+    await setDoc(doc(db, "users", user.uid), { name, phone, state, district, mandal, village }, { merge: true });
+    setProfile((p) => ({ ...(p || {}), name, phone, state, district, mandal, village }));
   }
 
-  const value = { user, profile, isAdmin, loading, signup, login, logout, updateProfileType, saveProfile };
+  // Permanently deletes the account: re-authenticates (Firebase requires a
+  // recent login for sensitive operations like this), removes the user's
+  // own land listings, their profile doc, then the auth account itself.
+  // Doesn't cascade-delete bookings/notifications/alerts they're party to —
+  // same simplification the rest of the app already makes (e.g. deleting a
+  // land doesn't clean up bookings against it either).
+  async function deleteAccount(password) {
+    if (!user) return;
+    const cred = EmailAuthProvider.credential(user.email, password);
+    await reauthenticateWithCredential(auth.currentUser, cred);
+    const myLands = await listMyLands(user.uid);
+    await Promise.all(myLands.map((l) => deleteLand(l.id)));
+    await deleteDoc(doc(db, "users", user.uid));
+    await deleteUser(auth.currentUser);
+  }
+
+  const value = { user, profile, isAdmin, loading, signup, login, logout, updateProfileType, saveProfile, deleteAccount };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

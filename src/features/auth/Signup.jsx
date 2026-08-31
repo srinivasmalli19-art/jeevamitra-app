@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../i18n/LanguageContext";
 import LocationPicker from "../../components/LocationPicker";
 import { OTHER_DISTRICT } from "../../data/indiaLocations";
 import AppBar from "../../components/AppBar";
 
 export default function Signup() {
   const { signup } = useAuth();
+  const { t } = useLanguage();
   const nav = useNavigate();
   const [form, setForm] = useState({
-    name: "", state: "Andhra Pradesh", district: "", districtOther: "", mandal: "", village: "",
+    name: "", phone: "", state: "Andhra Pradesh", district: "", districtOther: "", mandal: "", village: "",
     profileType: "livestock", email: "", password: "",
   });
   const [error, setError] = useState("");
@@ -40,6 +42,9 @@ export default function Signup() {
         <form onSubmit={handleSubmit}>
           <div className="field"><label>Full name</label>
             <input required value={form.name} onChange={(e) => set("name", e.target.value)} />
+          </div>
+          <div className="field"><label>{t("phone")}</label>
+            <input required type="tel" placeholder="10-digit number" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
           </div>
           <LocationPicker value={form} onChange={setLocation} />
           <div className="field"><label>I mainly...</label>

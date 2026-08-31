@@ -73,7 +73,7 @@ export default function Home() {
       lbl: t("home_stat_diseaseAlerts"), variant: "alert-card", onClick: () => nav("/alerts"),
     },
     bookingRequests: {
-      num: requests.length,
+      num: requests.filter((b) => b.status === "pending").length,
       lbl: t("home_stat_bookingRequests"), variant: "", onClick: () => nav("/bookings"),
     },
   };
@@ -126,6 +126,42 @@ export default function Home() {
             <span className="qa-icon">📢</span><span>{t("home_qa_reportAlert")}</span>
           </button>
         </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "18px 0 10px" }}>
+          <h3 style={{ fontSize: 15, margin: 0 }}>{t("home_yourBookings_title")}</h3>
+          <Link to="/bookings" className="see-all" style={{ fontSize: 11.5, fontWeight: 600, color: "var(--pasture)", textDecoration: "none" }}>{t("see_all")}</Link>
+        </div>
+        {!loading && mine.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>You haven't booked anything yet.</p>}
+        {mine.slice(0, 3).map((b) => (
+          <div key={b.id} className="card" style={{ cursor: "default" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div>
+                <div className="card-title">{b.landTitle}</div>
+                <div className="meta">{b.from} → {b.to}</div>
+              </div>
+              <span className={`pill ${b.status === "confirmed" ? "pill-green" : b.status === "pending" ? "pill-gold" : "pill-red"}`}>{b.status[0].toUpperCase() + b.status.slice(1)}</span>
+            </div>
+          </div>
+        ))}
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "18px 0 10px" }}>
+          <h3 style={{ fontSize: 15, margin: 0 }}>{t("home_yourPostedLands_title")}</h3>
+          <Link to="/lands/mine" className="see-all" style={{ fontSize: 11.5, fontWeight: 600, color: "var(--pasture)", textDecoration: "none" }}>{t("see_all")}</Link>
+        </div>
+        {!loading && myLands.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>You haven't posted any land yet.</p>}
+        {myLands.slice(0, 3).map((l) => (
+          <Link key={l.id} to={`/lands/${l.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+            <div className="card stub">
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div>
+                  <div className="card-title">{l.title}</div>
+                  <div className="meta">{l.village}, {l.district} · {l.acres} acres</div>
+                </div>
+                <div className="price">₹{l.price}/{l.unit}</div>
+              </div>
+            </div>
+          </Link>
+        ))}
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "18px 0 10px" }}>
           <h3 style={{ fontSize: 15, margin: 0 }}>{t("home_nearbyLands_title")}</h3>
