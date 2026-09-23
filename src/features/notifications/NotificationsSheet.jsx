@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { listMyNotifications, markNotificationRead, markAllRead } from "./notificationsApi";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../i18n/LanguageContext";
@@ -15,9 +16,10 @@ function timeAgo(ts) {
 }
 
 // Sheet content only — no shell/topbar/BottomNav, this renders inside <BottomSheet>.
-export default function NotificationsSheet({ onChanged }) {
+export default function NotificationsSheet({ onChanged, onNavigate }) {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const nav = useNavigate();
   const [notifs, setNotifs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,6 +40,11 @@ export default function NotificationsSheet({ onChanged }) {
     if (!n.read) {
       await markNotificationRead(n.id);
       refresh();
+    }
+    // Deep link (e.g. new_message notifications carry link="/messages/<id>").
+    if (n.link) {
+      onNavigate?.();
+      nav(n.link);
     }
   }
 
@@ -63,10 +70,11 @@ export default function NotificationsSheet({ onChanged }) {
         <div key={n.id} className="card" onClick={() => handleTap(n)} style={{ background: n.read ? "var(--paper-card)" : "var(--pasture-pale)" }}>
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             {!n.read && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--marigold)", marginTop: 6, flexShrink: 0 }} />}
-            <div>
+            <div style={{ flex: 1 }}>
               <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5 }}>{n.message}</p>
               <span className="meta" style={{ fontSize: 11 }}>{timeAgo(n.createdAt)}</span>
             </div>
+            {n.link && <span className="meta" style={{ fontSize: 16, color: "var(--pasture)" }} aria-hidden="true">›</span>}
           </div>
         </div>
       ))}

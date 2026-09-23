@@ -28,6 +28,9 @@ import StoryDetail from "./features/stories/StoryDetail";
 import AddStory from "./features/stories/AddStory";
 import VideosList from "./features/videos/VideosList";
 import AddVideo from "./features/videos/AddVideo";
+import ConversationsScreen from "./features/messaging/ConversationsScreen";
+import ConversationScreen from "./features/messaging/ConversationScreen";
+import MessagingQA from "./features/messaging/MessagingQA";
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -73,6 +76,11 @@ export default function App() {
         <Route path="/stories/:id" element={<Protected><StoryDetail /></Protected>} />
         <Route path="/videos" element={<Protected><VideosList /></Protected>} />
         <Route path="/videos/new" element={<Protected><AddVideo /></Protected>} />
+        <Route path="/messages" element={<Protected><ConversationsScreen /></Protected>} />
+        <Route path="/messages/:interactionId" element={<Protected><ConversationScreen /></Protected>} />
+        {import.meta.env.DEV && (
+          <Route path="/developer/messaging-qa" element={<Protected><MessagingQA /></Protected>} />
+        )}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

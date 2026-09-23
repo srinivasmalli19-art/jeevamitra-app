@@ -3,8 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getLand, deleteLand } from "./landsApi";
 import { requestBooking } from "./bookingsApi";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../i18n/LanguageContext";
 import { directionsUrl, whatsappShareUrl } from "../../utils/geo";
 import { useToast } from "../../components/ToastContext";
+import { getOrCreatePublicationInteraction } from "../messaging/messagingApi";
 import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
@@ -12,6 +14,7 @@ export default function LandDetail() {
   const { id } = useParams();
   const nav = useNavigate();
   const { user, profile } = useAuth();
+  const { t } = useLanguage();
   const showToast = useToast();
   const [land, setLand] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,6 +22,7 @@ export default function LandDetail() {
   const [to, setTo] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [contacting, setContacting] = useState(false);
 
   useEffect(() => {
     getLand(id).then((l) => { setLand(l); setLoading(false); });
@@ -62,6 +66,24 @@ export default function LandDetail() {
     await deleteLand(land.id);
     showToast("Listing deleted");
     nav("/lands/mine");
+  }
+
+  async function handleContactPublisher() {
+    if (isOwner || contacting) return; // self-contact is structurally impossible
+    setContacting(true);
+    try {
+      const interactionId = await getOrCreatePublicationInteraction({
+        contextId: land.id,
+        requesterId: user.uid,
+        recipientId: land.ownerId,
+        publicationTitle: land.title,
+        publicationImageUrl: land.photoUrl || null,
+      });
+      nav(`/messages/${interactionId}`);
+    } catch (err) {
+      showToast(err.message || "Couldn't open the conversation.");
+      setContacting(false);
+    }
   }
 
   return (
@@ -122,14 +144,24 @@ export default function LandDetail() {
             <button className="btn-danger" onClick={handleDelete}>Delete listing</button>
           </div>
         ) : (
-          <form onSubmit={handleRequest}>
+          <>
+            <button
+              className="btn-primary"
+              onClick={handleContactPublisher}
+              disabled={contacting}
+              style={{ marginBottom: 14 }}
+            >
+              💬 {contacting ? t("loading") : t("msg_contact_publisher")}
+            </button>
+            <form onSubmit={handleRequest}>
             <div className="row">
               <div className="field"><label>From</label><input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></div>
               <div className="field"><label>To</label><input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></div>
             </div>
             {msg && <div className="error-box">{msg}</div>}
             <button className="btn-primary" disabled={busy}>{busy ? "Sending..." : "Request booking"}</button>
-          </form>
+            </form>
+          </>
         )}
       </div>
       <BottomNav />

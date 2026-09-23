@@ -104,5 +104,86 @@ service cloud.firestore {
                     && (request.resource.data.ownerId == request.auth.uid
                         || request.resource.data.requesterId == request.auth.uid);
     }
+
+    // Publication-contextual one-to-one messaging. An interaction is a
+    // conversation between a requester and a publication owner about one
+    // publication. Only the two participants may read it; identity/ownership
+    // fields are immutable, and each participant may only clear their OWN
+    // unread count and only raise the OTHER party's — so nobody can tamper
+    // with the other side's unread badge.
+    match /interactions/{interactionId} {
+      // `resource == null` allows a get() on a not-yet-created interaction,
+      // which getOrCreatePublicationInteraction() must do inside its
+      // transaction before deciding to create. It leaks nothing (the doc has
+      // no data) and does not affect list queries, which are already
+      // constrained to the caller by their where() filters.
+      allow read: if request.auth != null
+                  && (resource == null
+                      || resource.data.requesterId == request.auth.uid
+                      || resource.data.recipientId == request.auth.uid);
+
+      allow create: if request.auth != null
+                    && request.resource.data.requesterId == request.auth.uid
+                    && request.resource.data.recipientId != request.auth.uid
+                    && request.resource.data.interactionType == 'publication_contact'
+                    && request.resource.data.contextType == 'publication'
+                    && request.resource.data.publicationOwnerId == request.resource.data.recipientId
+                    && request.resource.data.requesterUnreadCount == 0
+                    && request.resource.data.recipientUnreadCount == 0;
+
+      allow update: if request.auth != null
+                    && (resource.data.requesterId == request.auth.uid
+                        || resource.data.recipientId == request.auth.uid)
+                    // identity / ownership fields are immutable
+                    && request.resource.data.requesterId == resource.data.requesterId
+                    && request.resource.data.recipientId == resource.data.recipientId
+                    && request.resource.data.publicationOwnerId == resource.data.publicationOwnerId
+                    && request.resource.data.contextId == resource.data.contextId
+                    && request.resource.data.contextType == resource.data.contextType
+                    && request.resource.data.interactionType == resource.data.interactionType
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    // a participant may only lower/keep their own unread count
+                    // and only raise/keep the other participant's.
+                    && (
+                      (request.auth.uid == resource.data.requesterId
+                        && request.resource.data.requesterUnreadCount <= resource.data.requesterUnreadCount
+                        && request.resource.data.recipientUnreadCount >= resource.data.recipientUnreadCount)
+                      ||
+                      (request.auth.uid == resource.data.recipientId
+                        && request.resource.data.recipientUnreadCount <= resource.data.recipientUnreadCount
+                        && request.resource.data.requesterUnreadCount >= resource.data.requesterUnreadCount)
+                    );
+
+      // no delete of interactions from clients
+
+      // Messages live under their interaction. Access is derived from the
+      // parent interaction's participants. The sender is always the caller;
+      // the receiver may only stamp read receipts (not rewrite content).
+      match /messages/{messageId} {
+        function interactionExists() {
+          return exists(/databases/$(database)/documents/interactions/$(interactionId));
+        }
+        function interactionData() {
+          return get(/databases/$(database)/documents/interactions/$(interactionId)).data;
+        }
+        allow read: if request.auth != null
+                    && interactionExists()
+                    && (interactionData().requesterId == request.auth.uid
+                        || interactionData().recipientId == request.auth.uid);
+        allow create: if request.auth != null
+                      && interactionExists()
+                      && request.resource.data.senderId == request.auth.uid
+                      && request.resource.data.receiverId != request.auth.uid
+                      && (interactionData().requesterId == request.auth.uid
+                          || interactionData().recipientId == request.auth.uid);
+        allow update: if request.auth != null
+                      && request.auth.uid == resource.data.receiverId
+                      && request.resource.data.senderId == resource.data.senderId
+                      && request.resource.data.receiverId == resource.data.receiverId
+                      && request.resource.data.text == resource.data.text
+                      && request.resource.data.type == resource.data.type;
+        // no delete of messages from clients
+      }
+    }
   }
 }

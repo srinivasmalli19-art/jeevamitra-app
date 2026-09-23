@@ -207,9 +207,12 @@ export default function Home() {
       </div>
 
       <BottomSheet open={notifOpen} onClose={() => setNotifOpen(false)} title={t("notifications_title")}>
-        <NotificationsSheet onChanged={() => {
-          listMyNotifications(user.uid).then((data) => setUnread(data.filter((n) => !n.read).length)).catch(() => {});
-        }} />
+        <NotificationsSheet
+          onNavigate={() => setNotifOpen(false)}
+          onChanged={() => {
+            listMyNotifications(user.uid).then((data) => setUnread(data.filter((n) => !n.read).length)).catch(() => {});
+          }}
+        />
       </BottomSheet>
       <BottomNav />
     </div>
