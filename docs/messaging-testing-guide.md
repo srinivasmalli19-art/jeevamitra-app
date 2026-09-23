@@ -20,11 +20,46 @@ User B (Firebase Auth persists per browser profile).
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
+npm run dev      # http://localhost:5173  (talks to the LIVE Firebase project)
 npm test         # pure-logic unit tests (node --test)
 npm run lint
 npm run build    # production build (the /developer/messaging-qa route is stripped)
 ```
+
+### Recommended: full messaging locally, no live-project changes (Firebase Emulator)
+
+Messaging needs the new `interactions` rules to be active. Instead of deploying them to
+the live project, run the bundled emulator — this is the exact setup used to validate the
+feature. Requires Java (for the Firestore emulator).
+
+```bash
+# Terminal 1 — Auth + Firestore emulators with THIS repo's firestore.rules
+npm run emulators          # emulator UI at http://127.0.0.1:4000
+
+# Terminal 2 — the app, pointed at the emulator
+npm run dev:emulator       # http://localhost:5173  (VITE_USE_EMULATOR=1)
+```
+
+The emulator starts with an **empty** database, so create the two test accounts and User B's
+publication via the normal signup/post-land flow (below). Nothing touches the live project,
+and messaging works fully because `firestore.rules` is loaded by the emulator.
+
+On Windows (cmd/PowerShell) the inline env var in `dev:emulator` won't apply; use
+`set VITE_USE_EMULATOR=1 && vite` (cmd) or `$env:VITE_USE_EMULATOR=1; vite` (PowerShell), or
+`npx cross-env VITE_USE_EMULATOR=1 vite`.
+
+### Testing against the LIVE project instead
+
+`npm run dev` (without the emulator) talks to `jeeva-575fd`. For messaging to work there you
+must first publish the new rules once:
+
+```bash
+npx -y firebase-tools deploy --only firestore:rules --project jeeva-575fd
+# (or paste firestore.rules into Firebase Console -> Firestore -> Rules -> Publish)
+```
+
+Until the rules are published, the messaging UI fails safe (empty/error states); the rest of
+the app is unaffected.
 
 ## Core end-to-end scenario
 

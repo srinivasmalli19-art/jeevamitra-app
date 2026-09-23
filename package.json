@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:emulator": "VITE_USE_EMULATOR=1 vite",
+    "emulators": "npx -y firebase-tools emulators:start --only auth,firestore --project jeeva-575fd",
     "build": "vite build",
     "lint": "oxlint",
     "test": "node --test \"src/**/*.test.js\"",
