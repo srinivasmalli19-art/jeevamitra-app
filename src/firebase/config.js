@@ -6,11 +6,11 @@
 // which we'll set up once the app is working.
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyAiwjVWacN10z4_1MPrw61JRhbGEPodQTo",
-  authDomain: "jeeva-575fd.firebaseapp.com",
-  projectId: "jeeva-575fd",
-  storageBucket: "jeeva-575fd.firebasestorage.app",
-  messagingSenderId: "66692967421",
-  appId: "1:66692967421:web:89fde2c8a610fcf7314794",
-  measurementId: "G-KNR8MF84R7",
+  apiKey: "AIzaSyDAhvO3a3xvrdCoqAFU8rgGQedRBmPZWHc",
+  authDomain: "jeevamitra.firebaseapp.com",
+  projectId: "jeevamitra",
+  storageBucket: "jeevamitra.firebasestorage.app",
+  messagingSenderId: "360739375700",
+  appId: "1:360739375700:web:9ffc681c2a5615771b3bc1",
+  measurementId: "G-PFYJTP6936",
 };
