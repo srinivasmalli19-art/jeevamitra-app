@@ -1,16 +1,16 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
+import { setOptions, importLibrary } from "@googlemaps/js-api-loader";
 import { useLanguage } from "../../i18n/LanguageContext";
 import { listAllLands } from "../lands/landsApi";
 import { listVets } from "../vets/vetsApi";
 import { listAlerts } from "../alerts/alertsApi";
 import { getCurrentPosition } from "../../utils/geo";
-import { getGoogleMapsApiKey, mapsApiKeyConfigured } from "../../config/googleMaps";
 import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
 
 const VIJAYAWADA = { lat: 16.5062, lng: 80.648 };
+const MAP_ZOOM = 11;
 
 const MARKER_COLORS = {
   land: "#1F4025",
@@ -19,8 +19,25 @@ const MARKER_COLORS = {
   you: "#E4A020",
 };
 
-function markerIcon(color) {
-  if (typeof google === "undefined" || !google.maps?.SymbolPath) return undefined;
+function getMapsApiKey() {
+  const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  return typeof key === "string" ? key.trim() : "";
+}
+
+function mapsApiKeyConfigured() {
+  return getMapsApiKey().length > 0;
+}
+
+let loaderOptionsSet = false;
+
+function ensureLoaderOptions(key) {
+  if (!loaderOptionsSet) {
+    setOptions({ key });
+    loaderOptionsSet = true;
+  }
+}
+
+function circleMarkerIcon(color) {
   return {
     path: google.maps.SymbolPath.CIRCLE,
     fillColor: color,
@@ -31,134 +48,55 @@ function markerIcon(color) {
   };
 }
 
-function GoogleMapLayers({ center, layers, lands, vets, alerts, nav }) {
-  const [openId, setOpenId] = useState(null);
-
-  const youIcon = useMemo(() => markerIcon(MARKER_COLORS.you), []);
-  const landIcon = useMemo(() => markerIcon(MARKER_COLORS.land), []);
-  const vetIcon = useMemo(() => markerIcon(MARKER_COLORS.vet), []);
-  const alertIcon = useMemo(() => markerIcon(MARKER_COLORS.alert), []);
-
-  return (
-    <GoogleMap
-      mapContainerStyle={{ width: "100%", height: "100%" }}
-      center={center}
-      zoom={11}
-      options={{
-        fullscreenControl: false,
-        mapTypeControl: false,
-        streetViewControl: false,
-      }}
-    >
-      <Marker
-        position={center}
-        icon={youIcon}
-        onClick={() => setOpenId("you")}
-      />
-      {openId === "you" && (
-        <InfoWindow position={center} onCloseClick={() => setOpenId(null)}>
-          <span>You are here</span>
-        </InfoWindow>
-      )}
-
-      {layers.lands && lands.map((l) => (
-        <Marker
-          key={`l-${l.id}`}
-          position={{ lat: l.lat, lng: l.lng }}
-          icon={landIcon}
-          onClick={() => setOpenId(`l-${l.id}`)}
-        />
-      ))}
-      {layers.lands && lands.map((l) => openId === `l-${l.id}` && (
-        <InfoWindow
-          key={`lw-${l.id}`}
-          position={{ lat: l.lat, lng: l.lng }}
-          onCloseClick={() => setOpenId(null)}
-        >
-          <div style={{ fontSize: 13, lineHeight: 1.35 }}>
-            <b>{l.title}</b><br />
-            {l.village}, {l.district}<br />
-            <a href="#" onClick={(e) => { e.preventDefault(); nav(`/lands/${l.id}`); }}>View</a>
-          </div>
-        </InfoWindow>
-      ))}
-
-      {layers.vets && vets.map((v) => (
-        <Marker
-          key={`v-${v.id}`}
-          position={{ lat: v.lat, lng: v.lng }}
-          icon={vetIcon}
-          onClick={() => setOpenId(`v-${v.id}`)}
-        />
-      ))}
-      {layers.vets && vets.map((v) => openId === `v-${v.id}` && (
-        <InfoWindow
-          key={`vw-${v.id}`}
-          position={{ lat: v.lat, lng: v.lng }}
-          onCloseClick={() => setOpenId(null)}
-        >
-          <div style={{ fontSize: 13, lineHeight: 1.35 }}>
-            <b>{v.name}</b><br />
-            {v.designation}<br />
-            <a href="#" onClick={(e) => { e.preventDefault(); nav(`/vets/${v.id}`); }}>View</a>
-          </div>
-        </InfoWindow>
-      ))}
-
-      {layers.alerts && alerts.map((a) => (
-        <Marker
-          key={`a-${a.id}`}
-          position={{ lat: a.lat, lng: a.lng }}
-          icon={alertIcon}
-          onClick={() => setOpenId(`a-${a.id}`)}
-        />
-      ))}
-      {layers.alerts && alerts.map((a) => openId === `a-${a.id}` && (
-        <InfoWindow
-          key={`aw-${a.id}`}
-          position={{ lat: a.lat, lng: a.lng }}
-          onCloseClick={() => setOpenId(null)}
-        >
-          <div style={{ fontSize: 13, lineHeight: 1.35 }}>
-            <b>{a.disease}</b><br />
-            {a.village}, {a.district}<br />
-            <a href="#" onClick={(e) => { e.preventDefault(); nav(`/alerts/${a.id}`); }}>View</a>
-          </div>
-        </InfoWindow>
-      ))}
-    </GoogleMap>
-  );
+function appendViewLink(container, label, onView) {
+  container.appendChild(document.createElement("br"));
+  const a = document.createElement("a");
+  a.href = "#";
+  a.textContent = label;
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    onView();
+  });
+  container.appendChild(a);
 }
 
-function GoogleMapPanel(props) {
-  const apiKey = getGoogleMapsApiKey();
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: "jeevamitra-google-map",
-    googleMapsApiKey: apiKey,
-    preventGoogleFontsLoading: true,
-  });
+function landInfoContent(land, nav) {
+  const div = document.createElement("div");
+  div.style.fontSize = "13px";
+  div.style.lineHeight = "1.35";
+  const title = document.createElement("b");
+  title.textContent = land.title || "";
+  div.appendChild(title);
+  div.appendChild(document.createElement("br"));
+  div.appendChild(document.createTextNode(`${land.village || ""}, ${land.district || ""}`));
+  appendViewLink(div, "View", () => nav(`/lands/${land.id}`));
+  return div;
+}
 
-  if (loadError) {
-    return (
-      <div className="map-wrap map-wrap--placeholder" style={{ height: 420 }}>
-        <p className="meta" style={{ padding: 16, textAlign: "center" }}>
-          Map could not load. Check the Google Maps API key and enabled APIs.
-        </p>
-      </div>
-    );
-  }
-  if (!isLoaded) {
-    return (
-      <div className="map-wrap map-wrap--placeholder" style={{ height: 420 }}>
-        <p className="meta" style={{ padding: 16, textAlign: "center" }}>Loading map…</p>
-      </div>
-    );
-  }
-  return (
-    <div className="map-wrap" style={{ height: 420 }}>
-      <GoogleMapLayers {...props} />
-    </div>
-  );
+function vetInfoContent(vet, nav) {
+  const div = document.createElement("div");
+  div.style.fontSize = "13px";
+  div.style.lineHeight = "1.35";
+  const name = document.createElement("b");
+  name.textContent = vet.name || "";
+  div.appendChild(name);
+  div.appendChild(document.createElement("br"));
+  div.appendChild(document.createTextNode(vet.designation || ""));
+  appendViewLink(div, "View", () => nav(`/vets/${vet.id}`));
+  return div;
+}
+
+function alertInfoContent(alert, nav) {
+  const div = document.createElement("div");
+  div.style.fontSize = "13px";
+  div.style.lineHeight = "1.35";
+  const title = document.createElement("b");
+  title.textContent = alert.disease || "";
+  div.appendChild(title);
+  div.appendChild(document.createElement("br"));
+  div.appendChild(document.createTextNode(`${alert.village || ""}, ${alert.district || ""}`));
+  appendViewLink(div, "View", () => nav(`/alerts/${alert.id}`));
+  return div;
 }
 
 export default function Map() {
@@ -170,6 +108,12 @@ export default function Map() {
   const [alerts, setAlerts] = useState([]);
   const [center, setCenter] = useState(VIJAYAWADA);
   const [loading, setLoading] = useState(true);
+  const [mapStatus, setMapStatus] = useState("idle"); // idle | loading | ready | error
+
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const infoWindowRef = useRef(null);
+  const markersRef = useRef([]);
 
   useEffect(() => {
     Promise.all([listAllLands(), listVets(), listAlerts()]).then(([l, v, a]) => {
@@ -181,11 +125,138 @@ export default function Map() {
     getCurrentPosition().then(setCenter).catch(() => {});
   }, []);
 
+  // Initialize Google Map inside map-wrap when data is loaded and API key is set.
+  useEffect(() => {
+    if (loading || !mapsApiKeyConfigured() || !mapContainerRef.current) return undefined;
+
+    let cancelled = false;
+    setMapStatus("loading");
+
+    (async () => {
+      try {
+        const apiKey = getMapsApiKey();
+        ensureLoaderOptions(apiKey);
+        const { Map: GoogleMapCtor, InfoWindow } = await importLibrary("maps");
+        if (cancelled || !mapContainerRef.current) return;
+
+        const map = new GoogleMapCtor(mapContainerRef.current, {
+          center,
+          zoom: MAP_ZOOM,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+        });
+        mapRef.current = map;
+        infoWindowRef.current = new InfoWindow();
+
+        if (!cancelled) setMapStatus("ready");
+      } catch {
+        if (!cancelled) setMapStatus("error");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      infoWindowRef.current?.close();
+      infoWindowRef.current = null;
+      for (const marker of markersRef.current) {
+        google.maps.event.clearInstanceListeners(marker);
+        marker.setMap(null);
+      }
+      markersRef.current = [];
+      mapRef.current = null;
+      setMapStatus("idle");
+    };
+  }, [loading]);
+
+  // Keep map centered on user location when GPS updates.
+  useEffect(() => {
+    mapRef.current?.setCenter(center);
+  }, [center]);
+
+  // Sync markers and popups when layers or dataset changes.
+  useEffect(() => {
+    const map = mapRef.current;
+    const infoWindow = infoWindowRef.current;
+    if (mapStatus !== "ready" || !map || !infoWindow) return undefined;
+
+    infoWindow.close();
+
+    for (const marker of markersRef.current) {
+      google.maps.event.clearInstanceListeners(marker);
+      marker.setMap(null);
+    }
+    markersRef.current = [];
+
+    const youMarker = new google.maps.Marker({
+      map,
+      position: center,
+      icon: circleMarkerIcon(MARKER_COLORS.you),
+    });
+    youMarker.addListener("click", () => {
+      infoWindow.setContent(document.createTextNode("You are here"));
+      infoWindow.open({ map, anchor: youMarker });
+    });
+    markersRef.current.push(youMarker);
+
+    if (layers.lands) {
+      for (const l of lands) {
+        const marker = new google.maps.Marker({
+          map,
+          position: { lat: l.lat, lng: l.lng },
+          icon: circleMarkerIcon(MARKER_COLORS.land),
+        });
+        marker.addListener("click", () => {
+          infoWindow.setContent(landInfoContent(l, nav));
+          infoWindow.open({ map, anchor: marker });
+        });
+        markersRef.current.push(marker);
+      }
+    }
+
+    if (layers.vets) {
+      for (const v of vets) {
+        const marker = new google.maps.Marker({
+          map,
+          position: { lat: v.lat, lng: v.lng },
+          icon: circleMarkerIcon(MARKER_COLORS.vet),
+        });
+        marker.addListener("click", () => {
+          infoWindow.setContent(vetInfoContent(v, nav));
+          infoWindow.open({ map, anchor: marker });
+        });
+        markersRef.current.push(marker);
+      }
+    }
+
+    if (layers.alerts) {
+      for (const a of alerts) {
+        const marker = new google.maps.Marker({
+          map,
+          position: { lat: a.lat, lng: a.lng },
+          icon: circleMarkerIcon(MARKER_COLORS.alert),
+        });
+        marker.addListener("click", () => {
+          infoWindow.setContent(alertInfoContent(a, nav));
+          infoWindow.open({ map, anchor: marker });
+        });
+        markersRef.current.push(marker);
+      }
+    }
+
+    return () => {
+      infoWindow.close();
+      for (const marker of markersRef.current) {
+        google.maps.event.clearInstanceListeners(marker);
+        marker.setMap(null);
+      }
+      markersRef.current = [];
+    };
+  }, [mapStatus, layers, lands, vets, alerts, center, nav]);
+
   function toggleLayer(key) {
     setLayers((l) => ({ ...l, [key]: !l[key] }));
   }
-
-  const mapProps = { center, layers, lands, vets, alerts, nav };
 
   return (
     <div className="app-shell">
@@ -204,7 +275,19 @@ export default function Map() {
             </p>
           </div>
         )}
-        {!loading && mapsApiKeyConfigured() && <GoogleMapPanel {...mapProps} />}
+        {!loading && mapsApiKeyConfigured() && (
+          <div className="map-wrap" style={{ height: 420 }}>
+            {mapStatus === "loading" && (
+              <p className="meta" style={{ padding: 16, textAlign: "center" }}>Loading map…</p>
+            )}
+            {mapStatus === "error" && (
+              <p className="meta" style={{ padding: 16, textAlign: "center" }}>
+                Map could not load. Check the Google Maps API key and enabled APIs.
+              </p>
+            )}
+            <div ref={mapContainerRef} style={{ width: "100%", height: "100%" }} />
+          </div>
+        )}
         <p style={{ fontSize: 12.5, color: "var(--ink-soft)", textAlign: "center", marginTop: 10 }}>{t("map_caption")}</p>
         <div className="chip-row">
           <button type="button" className={`chip ${layers.lands ? "active" : ""}`} onClick={() => toggleLayer("lands")}>🌾 Lands</button>
