@@ -8,6 +8,7 @@
     "dev:emulator": "VITE_USE_EMULATOR=1 vite",
     "emulators": "npx -y firebase-tools emulators:start --only auth,firestore --project jeeva-575fd",
     "build": "vite build",
+    "deploy:firestore-rules": "npx -y firebase-tools deploy --only firestore:rules --project jeeva-575fd",
     "lint": "oxlint",
     "test": "node --test \"src/**/*.test.js\"",
     "preview": "vite preview",
@@ -17,11 +18,10 @@
   "dependencies": {
     "@capacitor/android": "^8.5.0",
     "@capacitor/core": "^8.5.0",
+    "@react-google-maps/api": "^2.20.8",
     "firebase": "^12.18.0",
-    "leaflet": "^1.9.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.18.2"
   },
   "devDependencies": {

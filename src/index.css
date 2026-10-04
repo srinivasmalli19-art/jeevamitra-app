@@ -186,10 +186,7 @@ input, select, textarea{font-family:'Work Sans', sans-serif;}
   isolation:isolate; z-index:0;}
 .map-wrap svg{width:100%;height:100%;}
 
-/* Leaflet's internal panes use z-index values up to 700 (popups, markers,
-   tiles). Without isolation on the wrapping element above, those values
-   compare against the GLOBAL stacking context — meaning map internals can
-   render on top of a sibling overlay like .sheet-overlay (z-index 300)
-   even though the map sits earlier in the DOM. isolation:isolate on
-   .map-wrap contains all of that to its own subtree. */
-.leaflet-container{z-index:0;}
+/* Google Maps panes can use high z-index values. isolation on .map-wrap
+   keeps map internals from painting over sibling overlays (.sheet-overlay). */
+.map-wrap .gm-style{z-index:0;}
+.map-wrap--placeholder{display:flex;align-items:center;justify-content:center;}
