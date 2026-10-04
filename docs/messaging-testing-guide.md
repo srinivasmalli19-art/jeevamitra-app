@@ -61,6 +61,12 @@ npx -y firebase-tools deploy --only firestore:rules --project jeeva-575fd
 Until the rules are published, the messaging UI fails safe (empty/error states); the rest of
 the app is unaffected.
 
+**Play Store builds always use the live project.** If messaging works only with
+`npm run dev:emulator` but fails on the installed Play Store app with
+“Missing or insufficient permissions”, see **`docs/play-store-messaging.md`**
+and run `npm run deploy:firestore-rules` once (or publish `firestore.rules` in
+the Firebase Console).
+
 ## Core end-to-end scenario
 
 1. **A → login**, open **Lands**, open User B's publication.
