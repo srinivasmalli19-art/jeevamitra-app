@@ -81,7 +81,12 @@ export default function LandDetail() {
       });
       nav(`/messages/${interactionId}`);
     } catch (err) {
-      showToast(err.message || "Couldn't open the conversation.");
+      const denied = err?.code === "permission-denied";
+      showToast(
+        denied
+          ? "Messaging permission denied. Publish the latest Firestore rules to Firebase (npm run deploy:firestore-rules)."
+          : (err.message || "Couldn't open the conversation."),
+      );
       setContacting(false);
     }
   }
