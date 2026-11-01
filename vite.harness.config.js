@@ -14,6 +14,8 @@ export default defineConfig({
       { find: /^firebase\/auth$/, replacement: `${fakes}/auth.js` },
       { find: /^firebase\/storage$/, replacement: `${fakes}/storage.js` },
       { find: /^firebase\/app$/, replacement: `${fakes}/app.js` },
+      { find: /^@capacitor\/core$/, replacement: `${fakes}/capacitorCore.js` },
+      { find: /^@capacitor\/push-notifications$/, replacement: `${fakes}/push.js` },
     ],
   },
 });

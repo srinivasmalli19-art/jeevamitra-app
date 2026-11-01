@@ -12,6 +12,7 @@ import { useOnline } from "./useOnline";
 import PublicationContextCard from "./components/PublicationContextCard";
 import MessageBubble from "./components/MessageBubble";
 import MessageInput from "./components/MessageInput";
+import { askForPushSoon } from "../push/events"; // v62
 
 export default function ConversationScreen() {
   const { interactionId } = useParams();
@@ -122,7 +123,7 @@ export default function ConversationScreen() {
         <div ref={bottomRef} />
       </div>
 
-      <MessageInput onSend={send} sending={sending} error={sendError} onClearError={clearError} media={media} />
+      <MessageInput onSend={async (txt) => { const ok = await send(txt); if (ok) askForPushSoon(); return ok; }} sending={sending} error={sendError} onClearError={clearError} media={media} />
     </div>
   );
 }

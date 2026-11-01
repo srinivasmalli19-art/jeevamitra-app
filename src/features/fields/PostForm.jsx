@@ -19,6 +19,7 @@ import CropPicker from "./components/CropPicker";
 import { useCropGuides } from "./cropGuidesApi";
 import { getPost, newPostId, savePost, uploadPostPhoto, uploadPostVoice } from "./fieldsApi";
 import { setSessionLocation } from "./useMyLocation";
+import { askForPushSoon } from "../push/events";
 import {
   KIND, PRICE, PRICE_TYPES_BY_KIND, ANIMALS, ANIMAL_PREFS, ANIMAL_EMOJI, EXTRAS, LOOKING_FOR, MAX_PHOTOS, isoDay, validatePost,
 } from "./fields.logic";
@@ -173,6 +174,7 @@ export default function PostForm() {
         await Promise.all(old.filter((p) => !keep.has(p)).map(deleteStoragePath));
       }
       showToast(isEdit ? t("fp_updated") : t("fp_saved"));
+      if (!isEdit) askForPushSoon();
       nav(`/field-posts/${postId}`, { replace: true });
     } catch (e2) {
       // Don't leave orphan files behind if saving failed.

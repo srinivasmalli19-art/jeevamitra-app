@@ -82,6 +82,9 @@ export default function Profile() {
         <Link to="/field-posts/mine" style={{ textDecoration: "none" }}>
           <button className="btn-secondary" style={{ marginTop: 10 }}>📋 {t("profile_myFieldPosts_link")}</button>
         </Link>
+        <Link to="/settings/notifications" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>🔔 {t("profile_notifSettings_link")}</button>
+        </Link>
 
         <h3 style={{ fontSize: 15, margin: "18px 0 10px" }}>{t("profile_type")}</h3>
         {Object.entries(meta).map(([key, m]) => {

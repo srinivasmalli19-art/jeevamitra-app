@@ -38,6 +38,8 @@ import PostForm from "./features/fields/PostForm";
 import PostDetail from "./features/fields/PostDetail";
 import MyPostsScreen from "./features/fields/MyPostsScreen";
 import HerdLocationSync from "./features/fields/HerdLocationSync";
+import PushManager from "./features/push/PushManager";
+import NotificationSettings from "./features/push/NotificationSettings";
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -55,6 +57,7 @@ export default function App() {
   return (
     <div style={{ position: "relative", maxWidth: 480, margin: "0 auto" }}>
       <HerdLocationSync />
+      <PushManager />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -94,6 +97,7 @@ export default function App() {
         <Route path="/field-posts/mine" element={<Protected><MyPostsScreen /></Protected>} />
         <Route path="/field-posts/:id" element={<Protected><PostDetail /></Protected>} />
         <Route path="/field-posts/:id/edit" element={<Protected><PostForm /></Protected>} />
+        <Route path="/settings/notifications" element={<Protected><NotificationSettings /></Protected>} />
         {import.meta.env.DEV && (
           <Route path="/developer/messaging-qa" element={<Protected><MessagingQA /></Protected>} />
         )}

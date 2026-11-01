@@ -44,7 +44,7 @@ export default function SettingsSheet({ open, onClose }) {
         <div className="settings-row" onClick={() => setLangOpen(true)}>
           {t("settings_language")} <span className="chev">{current.nativeName} ›</span>
         </div>
-        <div className="settings-row">{t("settings_notifications")} <span className="chev">On ›</span></div>
+        <div className="settings-row" onClick={() => { onClose(); nav("/settings/notifications"); }}>{t("settings_notifications")} <span className="chev">›</span></div>
         <div className="settings-row">{t("settings_units")} <span className="chev">Metric ›</span></div>
         <div className="settings-row" onClick={handleLogout}>{t("settings_logout")} <span className="chev">›</span></div>
         <div style={{ marginTop: 18 }}>
