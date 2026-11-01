@@ -262,3 +262,7 @@ export const translations = {
     msg_unavailable_body: "यह बातचीत मौजूद नहीं है या आपके पास इसकी पहुँच नहीं है।",
   },
 };
+
+// v62 additions live in their own file to keep this one readable.
+import { v62 } from "./translations.v62.js";
+for (const code of Object.keys(v62)) Object.assign(translations[code], v62[code]);

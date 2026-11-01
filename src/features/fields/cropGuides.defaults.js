@@ -232,7 +232,7 @@ export const DEFAULT_CROPS = [
     precautions: INTRODUCE_SLOWLY,
   },
   {
-    id: "sugarcane", emoji: "🎋", order: 14, basis: "vet",
+    id: "sugarcane", emoji: "🌿", order: 14, basis: "vet",
     name: { en: "Sugarcane tops", te: "చెరకు ఆకు", hi: "गन्ने का अगोला" },
     goodFor: {
       en: "Common green fodder after harvest.",
