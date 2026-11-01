@@ -11,6 +11,7 @@ import AppBar from "../../components/AppBar";
 import BottomSheet from "../../components/BottomSheet";
 import BottomNav from "../../components/BottomNav";
 import NotificationsSheet from "../notifications/NotificationsSheet";
+import { speciesLabel, unitLabel, bookingStatusLabel } from "../../i18n/labels";
 
 function severityDot(sev) {
   const cls = sev === "high" ? "sev-high" : sev === "medium" ? "sev-med" : "sev-low";
@@ -19,7 +20,7 @@ function severityDot(sev) {
 
 export default function Home() {
   const { user, profile } = useAuth();
-  const { t } = useLanguage();
+  const { t, tf } = useLanguage();
   const nav = useNavigate();
   const [lands, setLands] = useState([]);
   const [myLands, setMyLands] = useState([]);
@@ -146,7 +147,7 @@ export default function Home() {
                 <div className="card-title">{b.landTitle}</div>
                 <div className="meta">{b.from} → {b.to}</div>
               </div>
-              <span className={`pill ${b.status === "confirmed" ? "pill-green" : b.status === "pending" ? "pill-gold" : "pill-red"}`}>{b.status[0].toUpperCase() + b.status.slice(1)}</span>
+              <span className={`pill ${b.status === "confirmed" ? "pill-green" : b.status === "pending" ? "pill-gold" : "pill-red"}`}>{bookingStatusLabel(t, b.status)}</span>
             </div>
           </div>
         ))}
@@ -162,9 +163,9 @@ export default function Home() {
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
                   <div className="card-title">{l.title}</div>
-                  <div className="meta">{l.village}, {l.district} · {l.acres} acres</div>
+                  <div className="meta">{l.village}, {l.district} · {tf("ex_n_acres", { n: l.acres })}</div>
                 </div>
-                <div className="price">₹{l.price}/{l.unit}</div>
+                <div className="price">₹{l.price}/{unitLabel(t, l.unit)}</div>
               </div>
             </div>
           </Link>
@@ -185,10 +186,10 @@ export default function Home() {
                     <div className="meta">{l.village}, {l.district}</div>
                     <div style={{ marginTop: 6 }}>
                       <span className={`pill ${available ? "pill-green" : "pill-red"}`}>{available ? t("available") : t("ex_booked")}</span>{" "}
-                      <span className="pill pill-gold">{l.acres} acres</span>
+                      <span className="pill pill-gold">{tf("ex_n_acres", { n: l.acres })}</span>
                     </div>
                   </div>
-                  <div className="price">₹{l.price}/{l.unit}</div>
+                  <div className="price">₹{l.price}/{unitLabel(t, l.unit)}</div>
                 </div>
               </div>
             </Link>
@@ -205,7 +206,7 @@ export default function Home() {
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
                   <div className="card-title" style={{ display: "flex", alignItems: "center" }}>{severityDot(a.severity)}{a.disease}</div>
-                  <div className="meta">{a.species} · {a.village}, {a.district}</div>
+                  <div className="meta">{speciesLabel(t, a.species)} · {a.village}, {a.district}</div>
                 </div>
               </div>
             </div>

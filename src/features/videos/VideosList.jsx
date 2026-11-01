@@ -5,10 +5,12 @@ import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ToastContext";
 import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 export default function VideosList() {
   const { isAdmin } = useAuth();
   const nav = useNavigate();
+  const { t } = useLanguage();
   const showToast = useToast();
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,24 +23,24 @@ export default function VideosList() {
   useEffect(() => { refresh(); }, []);
 
   async function handleDelete(id) {
-    if (!confirm("Remove this video?")) return;
+    if (!confirm(t("ex_remove_video_confirm"))) return;
     await deleteVideo(id);
-    showToast("Video removed");
+    showToast(t("ex_video_removed"));
     refresh();
   }
 
   return (
     <div className="app-shell">
-      <AppBar variant="detail" title="Videos" onBack={() => nav(-1)} />
+      <AppBar variant="detail" title={t("ex_videos")} onBack={() => nav(-1)} />
       <div className="content">
         {isAdmin && (
           <Link to="/videos/new" style={{ textDecoration: "none" }}>
-            <button className="btn-primary" style={{ marginBottom: 14 }}>+ Add video (admin)</button>
+            <button className="btn-primary" style={{ marginBottom: 14 }}>{t("ex_add_video_admin")}</button>
           </Link>
         )}
-        {loading && <p className="meta">Loading...</p>}
+        {loading && <p className="meta">{t("loading")}</p>}
         {!loading && videos.length === 0 && (
-          <div className="empty-state"><div className="glyph">🎬</div><h3>No videos yet</h3><p>Check back soon.</p></div>
+          <div className="empty-state"><div className="glyph">🎬</div><h3>{t("ex_no_videos_title")}</h3><p>{t("ex_check_back")}</p></div>
         )}
         {videos.map((v) => (
           <div key={v.id} className="card" style={{ cursor: "default" }}>
@@ -47,10 +49,10 @@ export default function VideosList() {
             </div>
             <div className="row" style={{ marginTop: 10 }}>
               <a href={v.youtubeUrl} target="_blank" rel="noreferrer" style={{ flex: 1, textDecoration: "none" }}>
-                <button className="btn-primary" style={{ width: "100%" }}>Watch on YouTube</button>
+                <button className="btn-primary" style={{ width: "100%" }}>{t("ex_watch_youtube")}</button>
               </a>
               {isAdmin && (
-                <button className="btn-danger" style={{ flex: "0 0 auto", width: "auto", padding: "0 14px" }} onClick={() => handleDelete(v.id)}>Delete</button>
+                <button className="btn-danger" style={{ flex: "0 0 auto", width: "auto", padding: "0 14px" }} onClick={() => handleDelete(v.id)}>{t("delete")}</button>
               )}
             </div>
           </div>

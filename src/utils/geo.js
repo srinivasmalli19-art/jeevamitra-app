@@ -16,16 +16,16 @@ export function distanceKm(lat1, lng1, lat2, lng2) {
 export function getCurrentPosition() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      reject(new Error("Your browser doesn't support location."));
+      reject(Object.assign(new Error("Your browser doesn't support location."), { i18nKey: "ex_err_geo_unsupported" }));
       return;
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       (err) => {
         if (err.code === err.PERMISSION_DENIED) {
-          reject(new Error("Location permission denied. Please allow location access and try again."));
+          reject(Object.assign(new Error("Location permission denied. Please allow location access and try again."), { i18nKey: "ex_err_geo_denied" }));
         } else {
-          reject(new Error("Couldn't get your location. Please try again."));
+          reject(Object.assign(new Error("Couldn't get your location. Please try again."), { i18nKey: "ex_err_geo_failed" }));
         }
       },
       { enableHighAccuracy: true, timeout: 10000 }

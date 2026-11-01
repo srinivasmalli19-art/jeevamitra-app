@@ -5,13 +5,15 @@ import { listenToMessages, sendMessage } from "./messagesApi";
 import { getUserProfile } from "../auth/profileApi";
 import { useAuth } from "../../context/AuthContext";
 import AppBar from "../../components/AppBar";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 export default function BookingChat() {
   const { id } = useParams();
   const nav = useNavigate();
   const { user, profile } = useAuth();
+  const { t } = useLanguage();
   const [booking, setBooking] = useState(null);
-  const [otherName, setOtherName] = useState("Chat");
+  const [otherName, setOtherName] = useState("");
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function BookingChat() {
       setBooking(b);
       const otherId = b.ownerId === user.uid ? b.requesterId : b.ownerId;
       const otherProfile = await getUserProfile(otherId);
-      setOtherName(otherProfile?.name || (b.ownerId === user.uid ? b.requesterName : "Owner"));
+      setOtherName(otherProfile?.name || (b.ownerId === user.uid ? b.requesterName : t("ex_owner")));
       setLoading(false);
       unsub = listenToMessages(id, setMessages);
     });
@@ -49,8 +51,8 @@ export default function BookingChat() {
     });
   }
 
-  if (loading) return <div className="app-shell"><div className="content"><p className="meta">Loading...</p></div></div>;
-  if (!booking) return <div className="app-shell"><div className="content"><p>Chat not found.</p></div></div>;
+  if (loading) return <div className="app-shell"><div className="content"><p className="meta">{t("loading")}</p></div></div>;
+  if (!booking) return <div className="app-shell"><div className="content"><p>{t("ex_chat_not_found")}</p></div></div>;
 
   return (
     <div className="app-shell">
@@ -87,10 +89,10 @@ export default function BookingChat() {
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Type a message..."
+          placeholder={t("msg_type_message")}
           style={{ flex: 1, padding: "12px 13px", borderRadius: 11, border: "1.3px solid var(--line)", fontSize: 13.5, outline: "none" }}
         />
-        <button className="btn-primary" style={{ width: "auto", padding: "0 18px" }}>Send</button>
+        <button className="btn-primary" style={{ width: "auto", padding: "0 18px" }}>{t("msg_send")}</button>
       </form>
     </div>
   );

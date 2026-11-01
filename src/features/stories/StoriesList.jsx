@@ -4,10 +4,12 @@ import { listStories } from "./storiesApi";
 import { useAuth } from "../../context/AuthContext";
 import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 export default function StoriesList() {
   const { isAdmin } = useAuth();
   const nav = useNavigate();
+  const { t } = useLanguage();
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,16 +19,16 @@ export default function StoriesList() {
 
   return (
     <div className="app-shell">
-      <AppBar variant="detail" title="Success stories" onBack={() => nav(-1)} />
+      <AppBar variant="detail" title={t("ex_success_stories")} onBack={() => nav(-1)} />
       <div className="content">
         {isAdmin && (
           <Link to="/stories/new" style={{ textDecoration: "none" }}>
-            <button className="btn-primary" style={{ marginBottom: 14 }}>+ Add story (admin)</button>
+            <button className="btn-primary" style={{ marginBottom: 14 }}>{t("ex_add_story_admin")}</button>
           </Link>
         )}
-        {loading && <p className="meta">Loading...</p>}
+        {loading && <p className="meta">{t("loading")}</p>}
         {!loading && stories.length === 0 && (
-          <div className="empty-state"><div className="glyph">📖</div><h3>No stories yet</h3><p>Check back soon for farmer success stories.</p></div>
+          <div className="empty-state"><div className="glyph">📖</div><h3>{t("ex_no_stories_title")}</h3><p>{t("ex_no_stories_body")}</p></div>
         )}
         {stories.map((s) => (
           <Link key={s.id} to={`/stories/${s.id}`} style={{ textDecoration: "none", color: "inherit" }}>

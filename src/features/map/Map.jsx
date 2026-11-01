@@ -60,7 +60,7 @@ function appendViewLink(container, label, onView) {
   container.appendChild(a);
 }
 
-function landInfoContent(land, nav) {
+function landInfoContent(land, nav, viewText = "View") {
   const div = document.createElement("div");
   div.style.fontSize = "13px";
   div.style.lineHeight = "1.35";
@@ -69,11 +69,11 @@ function landInfoContent(land, nav) {
   div.appendChild(title);
   div.appendChild(document.createElement("br"));
   div.appendChild(document.createTextNode(`${land.village || ""}, ${land.district || ""}`));
-  appendViewLink(div, "View", () => nav(`/lands/${land.id}`));
+  appendViewLink(div, viewText, () => nav(`/lands/${land.id}`));
   return div;
 }
 
-function vetInfoContent(vet, nav) {
+function vetInfoContent(vet, nav, viewText = "View") {
   const div = document.createElement("div");
   div.style.fontSize = "13px";
   div.style.lineHeight = "1.35";
@@ -82,11 +82,11 @@ function vetInfoContent(vet, nav) {
   div.appendChild(name);
   div.appendChild(document.createElement("br"));
   div.appendChild(document.createTextNode(vet.designation || ""));
-  appendViewLink(div, "View", () => nav(`/vets/${vet.id}`));
+  appendViewLink(div, viewText, () => nav(`/vets/${vet.id}`));
   return div;
 }
 
-function alertInfoContent(alert, nav) {
+function alertInfoContent(alert, nav, viewText = "View") {
   const div = document.createElement("div");
   div.style.fontSize = "13px";
   div.style.lineHeight = "1.35";
@@ -95,7 +95,7 @@ function alertInfoContent(alert, nav) {
   div.appendChild(title);
   div.appendChild(document.createElement("br"));
   div.appendChild(document.createTextNode(`${alert.village || ""}, ${alert.district || ""}`));
-  appendViewLink(div, "View", () => nav(`/alerts/${alert.id}`));
+  appendViewLink(div, viewText, () => nav(`/alerts/${alert.id}`));
   return div;
 }
 
@@ -114,6 +114,9 @@ export default function Map() {
   const mapRef = useRef(null);
   const infoWindowRef = useRef(null);
   const markersRef = useRef([]);
+  // Info-window texts in the current language (read inside the map effect).
+  const textRef = useRef({});
+  textRef.current = { you: t("ex_you_are_here"), view: t("ex_view") };
 
   useEffect(() => {
     Promise.all([listAllLands(), listVets(), listAlerts()]).then(([l, v, a]) => {
@@ -188,7 +191,7 @@ export default function Map() {
       icon: circleMarkerIcon(MARKER_COLORS.you),
     });
     youMarker.addListener("click", () => {
-      infoWindow.setContent(document.createTextNode("You are here"));
+      infoWindow.setContent(document.createTextNode(textRef.current.you));
       infoWindow.open({ map, anchor: youMarker });
     });
     markersRef.current.push(youMarker);
@@ -201,7 +204,7 @@ export default function Map() {
           icon: circleMarkerIcon(MARKER_COLORS.land),
         });
         marker.addListener("click", () => {
-          infoWindow.setContent(landInfoContent(l, nav));
+          infoWindow.setContent(landInfoContent(l, nav, textRef.current.view));
           infoWindow.open({ map, anchor: marker });
         });
         markersRef.current.push(marker);
@@ -216,7 +219,7 @@ export default function Map() {
           icon: circleMarkerIcon(MARKER_COLORS.vet),
         });
         marker.addListener("click", () => {
-          infoWindow.setContent(vetInfoContent(v, nav));
+          infoWindow.setContent(vetInfoContent(v, nav, textRef.current.view));
           infoWindow.open({ map, anchor: marker });
         });
         markersRef.current.push(marker);
@@ -231,7 +234,7 @@ export default function Map() {
           icon: circleMarkerIcon(MARKER_COLORS.alert),
         });
         marker.addListener("click", () => {
-          infoWindow.setContent(alertInfoContent(a, nav));
+          infoWindow.setContent(alertInfoContent(a, nav, textRef.current.view));
           infoWindow.open({ map, anchor: marker });
         });
         markersRef.current.push(marker);
@@ -256,7 +259,7 @@ export default function Map() {
     <div className="app-shell">
       <AppBar variant="top" title={t("map_title")} subtitle={t("map_subtitle")} onMap={() => nav("/map")} />
       <div className="content">
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, marginBottom: 14 }}>Map view</h1>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, marginBottom: 14 }}>{t("ex_map_view")}</h1>
         <div className="map-wrap" style={{ height: 420 }}>
           {!loading && mapsApiKeyConfigured() && (
             <div ref={mapContainerRef} style={{ width: "100%", height: "100%" }} />
@@ -268,15 +271,15 @@ export default function Map() {
           )}
           {!loading && mapsApiKeyConfigured() && mapStatus === "error" && (
             <p className="meta" style={{ padding: 16, textAlign: "center" }}>
-              Map could not load. Check the Google Maps API key and enabled APIs.
+              {t("ex_map_failed")}
             </p>
           )}
         </div>
         <p style={{ fontSize: 12.5, color: "var(--ink-soft)", textAlign: "center", marginTop: 10 }}>{t("map_caption")}</p>
         <div className="chip-row">
-          <button type="button" className={`chip ${layers.lands ? "active" : ""}`} onClick={() => toggleLayer("lands")}>🌾 Lands</button>
-          <button type="button" className={`chip ${layers.vets ? "active" : ""}`} onClick={() => toggleLayer("vets")}>🩺 Vets</button>
-          <button type="button" className={`chip ${layers.alerts ? "active" : ""}`} onClick={() => toggleLayer("alerts")}>🚨 Alerts</button>
+          <button type="button" className={`chip ${layers.lands ? "active" : ""}`} onClick={() => toggleLayer("lands")}>🌾 {t("ex_layer_lands")}</button>
+          <button type="button" className={`chip ${layers.vets ? "active" : ""}`} onClick={() => toggleLayer("vets")}>🩺 {t("ex_layer_vets")}</button>
+          <button type="button" className={`chip ${layers.alerts ? "active" : ""}`} onClick={() => toggleLayer("alerts")}>🚨 {t("ex_layer_alerts")}</button>
         </div>
       </div>
       <BottomNav />

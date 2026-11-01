@@ -4,6 +4,7 @@ import { getLand, deleteLand } from "./landsApi";
 import { requestBooking } from "./bookingsApi";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../i18n/LanguageContext";
+import { unitLabel, amenityLabel } from "../../i18n/labels";
 import { directionsUrl, whatsappShareUrl } from "../../utils/geo";
 import { useToast } from "../../components/ToastContext";
 import { getOrCreatePublicationInteraction } from "../messaging/messagingApi";
@@ -28,8 +29,8 @@ export default function LandDetail() {
     getLand(id).then((l) => { setLand(l); setLoading(false); });
   }, [id]);
 
-  if (loading) return <div className="app-shell"><div className="content"><p className="meta">Loading...</p></div></div>;
-  if (!land) return <div className="app-shell"><div className="content"><p>Land not found.</p></div></div>;
+  if (loading) return <div className="app-shell"><div className="content"><p className="meta">{t("loading")}</p></div></div>;
+  if (!land) return <div className="app-shell"><div className="content"><p>{t("ex_land_not_found")}</p></div></div>;
 
   const isOwner = land.ownerId === user.uid;
 
@@ -40,9 +41,9 @@ export default function LandDetail() {
   async function handleRequest(e) {
     e.preventDefault();
     setMsg("");
-    if (!from || !to || from > to) { setMsg("Pick a valid date range."); return; }
+    if (!from || !to || from > to) { setMsg(t("ex_pick_valid_dates")); return; }
     if (overlapsExisting(from, to)) {
-      setMsg("Those dates are already confirmed for another booking. Try different dates.");
+      setMsg(t("ex_dates_taken"));
       return;
     }
     setBusy(true);
@@ -52,8 +53,8 @@ export default function LandDetail() {
         requesterId: user.uid, requesterName: profile?.name || "Someone",
         from, to,
       });
-      setMsg("Booking request sent to the owner.");
-      showToast("Booking request sent!");
+      setMsg(t("ex_booking_sent"));
+      showToast(t("ex_booking_sent_toast"));
     } catch (err) {
       setMsg(err.message);
     } finally {
@@ -62,9 +63,9 @@ export default function LandDetail() {
   }
 
   async function handleDelete() {
-    if (!confirm("Delete this land listing?")) return;
+    if (!confirm(t("ex_delete_land_confirm"))) return;
     await deleteLand(land.id);
-    showToast("Listing deleted");
+    showToast(t("ex_listing_deleted"));
     nav("/lands/mine");
   }
 
@@ -81,14 +82,15 @@ export default function LandDetail() {
       });
       nav(`/messages/${interactionId}`);
     } catch (err) {
-      showToast(err.message || "Couldn't open the conversation.");
+      console.warn("open chat failed", err);
+      showToast(t("ex_chat_open_failed"));
       setContacting(false);
     }
   }
 
   return (
     <div className="app-shell">
-      <AppBar variant="detail" title="Land details" onBack={() => nav(-1)} />
+      <AppBar variant="detail" title={t("ex_land_details")} onBack={() => nav(-1)} />
       <div className="content">
         <div
           className="detail-hero"
@@ -98,27 +100,27 @@ export default function LandDetail() {
           <div className="hero-tag">{land.title}</div>
         </div>
         <div className="card" style={{ cursor: "default" }}>
-          <div className="kv-row"><span className="k">Village</span><span className="v">{land.village}</span></div>
-          <div className="kv-row"><span className="k">District</span><span className="v">{land.district}</span></div>
-          <div className="kv-row"><span className="k">Acres</span><span className="v">{land.acres}</span></div>
-          <div className="kv-row"><span className="k">Price</span><span className="v">₹{land.price}/{land.unit}</span></div>
+          <div className="kv-row"><span className="k">{t("ex_village")}</span><span className="v">{land.village}</span></div>
+          <div className="kv-row"><span className="k">{t("ex_district")}</span><span className="v">{land.district}</span></div>
+          <div className="kv-row"><span className="k">{t("ex_acres")}</span><span className="v">{land.acres}</span></div>
+          <div className="kv-row"><span className="k">{t("ex_price")}</span><span className="v">₹{land.price}/{unitLabel(t, land.unit)}</span></div>
           {land.description && <p style={{ fontSize: 13.5, lineHeight: 1.6, marginTop: 10 }}>{land.description}</p>}
         </div>
 
         {land.amenities && land.amenities.length > 0 && (
           <div className="card" style={{ cursor: "default" }}>
-            <div className="card-title" style={{ fontSize: 13.5, marginBottom: 8 }}>Amenities</div>
+            <div className="card-title" style={{ fontSize: 13.5, marginBottom: 8 }}>{t("ex_amenities")}</div>
             {land.amenities.map((a) => (
-              <span key={a} className="pill pill-sky" style={{ marginRight: 6, marginBottom: 6, display: "inline-block" }}>{a}</span>
+              <span key={a} className="pill pill-sky" style={{ marginRight: 6, marginBottom: 6, display: "inline-block" }}>{amenityLabel(t, a)}</span>
             ))}
           </div>
         )}
 
         {(land.bookedRanges || []).length > 0 && (
           <div className="card" style={{ cursor: "default" }}>
-            <div className="card-title" style={{ fontSize: 13.5 }}>Confirmed blocked dates</div>
+            <div className="card-title" style={{ fontSize: 13.5 }}>{t("ex_blocked_dates")}</div>
             {land.bookedRanges.map((r, i) => (
-              <div key={i} className="kv-row"><span className="k">Blocked</span><span className="v">{r.from} → {r.to}</span></div>
+              <div key={i} className="kv-row"><span className="k">{t("ex_blocked")}</span><span className="v">{r.from} → {r.to}</span></div>
             ))}
           </div>
         )}
@@ -126,7 +128,7 @@ export default function LandDetail() {
         <div className="row" style={{ marginBottom: 12 }}>
           {land.lat && land.lng && (
             <a href={directionsUrl(land.lat, land.lng)} target="_blank" rel="noreferrer" style={{ flex: 1, textDecoration: "none" }}>
-              <button className="btn-secondary" style={{ width: "100%" }}>📍 Get directions</button>
+              <button className="btn-secondary" style={{ width: "100%" }}>{t("ex_get_directions")}</button>
             </a>
           )}
           <a
@@ -135,13 +137,13 @@ export default function LandDetail() {
             rel="noreferrer"
             style={{ flex: 1, textDecoration: "none" }}
           >
-            <button className="btn-secondary" style={{ width: "100%" }}>Share on WhatsApp</button>
+            <button className="btn-secondary" style={{ width: "100%" }}>{t("fp_share_whatsapp")}</button>
           </a>
         </div>
 
         {isOwner ? (
           <div className="row">
-            <button className="btn-danger" onClick={handleDelete}>Delete listing</button>
+            <button className="btn-danger" onClick={handleDelete}>{t("ex_delete_listing")}</button>
           </div>
         ) : (
           <>
@@ -155,11 +157,11 @@ export default function LandDetail() {
             </button>
             <form onSubmit={handleRequest}>
             <div className="row">
-              <div className="field"><label>From</label><input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></div>
-              <div className="field"><label>To</label><input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></div>
+              <div className="field"><label>{t("ex_from")}</label><input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></div>
+              <div className="field"><label>{t("ex_to")}</label><input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></div>
             </div>
             {msg && <div className="error-box">{msg}</div>}
-            <button className="btn-primary" disabled={busy}>{busy ? "Sending..." : "Request booking"}</button>
+            <button className="btn-primary" disabled={busy}>{busy ? t("msg_sending") : t("ex_request_booking")}</button>
             </form>
           </>
         )}
