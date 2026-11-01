@@ -31,13 +31,25 @@ function BellIcon() {
 // knew how much space the actual content needed. Owning it here instead,
 // as a normal icon-btn inside the app bar's icon row, means it's laid out
 // in-flow and can never overlap anything.
+// v62: the button now shows the CURRENT language (తె / हि / EN) instead of a
+// generic globe, so a farmer can see at a glance which language is on and
+// tap it to switch. It also appears on detail/form screens (see below).
+const LANGUAGE_BADGE = { en: "EN", te: "తె", hi: "हि" };
+
 function LanguageIconButton() {
   const { lang, setLang, languages } = useLanguage();
   const [open, setOpen] = useState(false);
   const current = languages.find((l) => l.code === lang) || languages[0];
   return (
     <>
-      <button className="icon-btn" onClick={() => setOpen(true)} aria-label="Change language" style={{ fontSize: 15 }}>🌐</button>
+      <button
+        className="icon-btn lang-badge"
+        onClick={() => setOpen(true)}
+        aria-label={`Language: ${current.nativeName}. Tap to change`}
+        title={current.nativeName}
+      >
+        {LANGUAGE_BADGE[current.code] || current.code.toUpperCase()}
+      </button>
       <BottomSheet open={open} onClose={() => setOpen(false)} title="🌐 Language / భాష / भाषा">
         <LanguageList
           languages={languages}
@@ -59,7 +71,8 @@ export default function AppBar({ variant = "top", title, subtitle, onMap, onBell
       <div className="topbar">
         <div className="back-row">
           <button className="back-btn" onClick={onBack} aria-label="Back"><BackIcon /></button>
-          <h1 style={{ fontSize: 18 }}>{title}</h1>
+          <h1 style={{ fontSize: 18, flex: 1 }}>{title}</h1>
+          <LanguageIconButton />
         </div>
       </div>
     );

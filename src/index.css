@@ -193,3 +193,7 @@ input, select, textarea{font-family:'Work Sans', sans-serif;}
    even though the map sits earlier in the DOM. isolation:isolate on
    .map-wrap contains all of that to its own subtree. */
 .leaflet-container{z-index:0;}
+
+/* v62: language badge in the app bar shows the current language */
+.lang-badge{font-size:16px; font-weight:700; color:var(--paper); line-height:1;
+  font-family:'Noto Sans Telugu','Noto Sans Devanagari',system-ui,sans-serif;}
