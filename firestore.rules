@@ -185,5 +185,99 @@ service cloud.firestore {
         // no delete of messages from clients
       }
     }
+
+    // =====================================================================
+    // v62 additions (everything above this line is unchanged from v61).
+    // Crop Residue, Night Stay and Herds, alert settings, crop safety cards.
+    // =====================================================================
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Shape check for a field post (create and update).
+    function validFieldPost(d) {
+      return d.keys().hasOnly([
+          'kind', 'ownerId', 'ownerName', 'ownerPhone', 'status', 'hidden',
+          'lat', 'lng', 'geohash', 'state', 'district', 'mandal', 'village',
+          'photos', 'voiceNote', 'description', 'priceType', 'amount', 'negotiable',
+          'availableFrom', 'availableUntil',
+          'crop', 'cropOther', 'acres', 'untilFinished', 'allowNightStay', 'waterNearby',
+          'notSprayed', 'lastSprayDate',
+          'nights', 'animalPreferred', 'extras', 'linkedResiduePostId',
+          'animalType', 'animalCount', 'headingTo', 'lookingFor', 'locationUpdatedAt',
+          'createdAt', 'updatedAt'])
+        && d.kind in ['residue', 'nightStayNeed', 'herdAvailable']
+        && d.lat is number && d.lat >= -90 && d.lat <= 90
+        && d.lng is number && d.lng >= -180 && d.lng <= 180
+        && d.geohash is string && d.geohash.size() <= 12
+        && d.village is string && d.village.size() > 0 && d.village.size() <= 100
+        && d.photos is list && d.photos.size() <= 5
+        && (d.voiceNote == null || (d.voiceNote is map && d.voiceNote.durationSec is number && d.voiceNote.durationSec <= 120))
+        && (!('description' in d) || (d.description is string && d.description.size() <= 1000))
+        && (d.priceType == null || d.priceType in ['perDay', 'perWeek', 'perNight', 'perAcre', 'perSeason', 'fullCompletion', 'lumpSum', 'freeForManure'])
+        && (d.amount == null || (d.amount is number && d.amount > 0 && d.amount <= 10000000))
+        && d.status in ['available', 'partly', 'full', 'closed']
+        && d.hidden is bool;
+    }
+
+    // Anyone signed in can browse posts that are not hidden by an admin; the
+    // owner can always see their own. The app queries with hidden == false.
+    // Owners create, edit, set status and delete their own posts, but can
+    // never un-hide a post an admin hid (Central Admin uses the Admin SDK).
+    match /fieldPosts/{postId} {
+      allow read: if signedIn()
+                  && (resource.data.hidden == false || resource.data.ownerId == request.auth.uid);
+      allow create: if signedIn()
+                    && request.resource.data.ownerId == request.auth.uid
+                    && request.resource.data.hidden == false
+                    && request.resource.data.status == 'available'
+                    && validFieldPost(request.resource.data);
+      allow update: if signedIn()
+                    && resource.data.ownerId == request.auth.uid
+                    && request.resource.data.ownerId == resource.data.ownerId
+                    && request.resource.data.kind == resource.data.kind
+                    && request.resource.data.hidden == resource.data.hidden
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && request.resource.data.status in ['available', 'partly', 'full']
+                    && validFieldPost(request.resource.data);
+      allow delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // Push tokens: one document per phone, only for that user.
+    match /users/{userId}/devices/{deviceId} {
+      allow read, delete: if signedIn() && request.auth.uid == userId;
+      allow create, update: if signedIn() && request.auth.uid == userId
+                            && request.resource.data.keys().hasOnly(['fcmToken', 'lang', 'platform', 'updatedAt'])
+                            && request.resource.data.fcmToken is string
+                            && request.resource.data.fcmToken.size() < 4096
+                            && request.resource.data.lang in ['en', 'te', 'hi'];
+    }
+
+    // Alert preferences: only the user.
+    match /notificationSettings/{userId} {
+      allow read, delete: if signedIn() && request.auth.uid == userId;
+      allow create, update: if signedIn() && request.auth.uid == userId
+                            && request.resource.data.keys().hasOnly(['radiusKm', 'quietHours', 'types', 'updatedAt'])
+                            && request.resource.data.radiusKm in [5, 10, 25]
+                            && request.resource.data.quietHours is bool
+                            && request.resource.data.types is map;
+    }
+
+    // Crop safety cards and settings: everyone signed in reads; only Central
+    // Admin (server, Admin SDK) writes.
+    match /cropGuides/{cropId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /cropGuideSettings/{docId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    // Used only by Cloud Functions to avoid repeat alerts. No app access.
+    match /alertLog/{entryId} {
+      allow read, write: if false;
+    }
   }
 }

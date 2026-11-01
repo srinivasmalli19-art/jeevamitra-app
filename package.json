@@ -12,7 +12,8 @@
     "test": "node --test \"src/**/*.test.js\"",
     "preview": "vite preview",
     "android:sync": "vite build && npx cap sync android",
-    "android:open": "npx cap open android"
+    "android:open": "npx cap open android",
+    "test:rules": "npx -y firebase-tools@15 emulators:exec --only firestore,storage --project demo-jeevamitra-rules \"node --test tests/rules/\""
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.5.0",
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",

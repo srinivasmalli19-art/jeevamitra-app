@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// JeevaMitra v62: Firebase Storage was not used before v62. Land photos stay
+// in Firestore as before; only the new features store files here.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Photos (JPEG, up to 2 MB) and voice notes (audio, up to 5 MB ~ 2 minutes).
+    function validMedia() {
+      return (request.resource.contentType.matches('image/.*') && request.resource.size < 2 * 1024 * 1024)
+          || (request.resource.contentType.matches('audio/.*') && request.resource.size < 5 * 1024 * 1024);
+    }
+
+    // The two people in a conversation (read from Firestore).
+    function isChatParticipant(interactionId) {
+      let it = firestore.get(/databases/(default)/documents/interactions/$(interactionId)).data;
+      return request.auth.uid == it.requesterId || request.auth.uid == it.recipientId;
+    }
+
+    // Field post photos and voice notes: public to signed-in users, written by the owner.
+    match /fieldPosts/{ownerId}/{postId}/{fileName} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.auth.uid == ownerId && validMedia();
+      allow delete: if signedIn() && request.auth.uid == ownerId;
+    }
+
+    // Chat photos and voice messages: only the two people in that conversation.
+    match /chats/{interactionId}/{senderId}/{fileName} {
+      allow read: if signedIn() && isChatParticipant(interactionId);
+      allow create: if signedIn() && request.auth.uid == senderId
+                    && isChatParticipant(interactionId) && validMedia();
+      allow delete: if signedIn() && request.auth.uid == senderId;
+    }
+
+    // Everything else is closed.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

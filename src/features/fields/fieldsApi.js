@@ -72,7 +72,9 @@ export function watchPost(id, onData, onError) {
 
 /** Browse list for one kind: only listed posts (not hidden / full / expired). */
 export async function listPosts(kind) {
-  const snap = await getDocs(query(postsCol, where("kind", "==", kind)));
+  // hidden == false lets the security rules prove the query is allowed.
+  // Two equality filters are served by single-field indexes (no composite index).
+  const snap = await getDocs(query(postsCol, where("kind", "==", kind), where("hidden", "==", false)));
   return snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((p) => isListed(p));
 }
 
