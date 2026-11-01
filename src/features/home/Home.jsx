@@ -125,6 +125,13 @@ export default function Home() {
           <button className="qa-btn" onClick={() => nav("/alerts/new")}>
             <span className="qa-icon">📢</span><span>{t("home_qa_reportAlert")}</span>
           </button>
+          {/* v62 */}
+          <button className="qa-btn" onClick={() => nav("/residue")}>
+            <span className="qa-icon">🌾</span><span>{t("home_qa_cropResidue")}</span>
+          </button>
+          <button className="qa-btn" onClick={() => nav("/night-stay")}>
+            <span className="qa-icon">🐑</span><span>{t("home_qa_nightStay")}</span>
+          </button>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "18px 0 10px" }}>

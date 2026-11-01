@@ -31,6 +31,13 @@ import AddVideo from "./features/videos/AddVideo";
 import ConversationsScreen from "./features/messaging/ConversationsScreen";
 import ConversationScreen from "./features/messaging/ConversationScreen";
 import MessagingQA from "./features/messaging/MessagingQA";
+// v62: Crop Residue, Night Stay and Herds
+import ResidueScreen from "./features/fields/ResidueScreen";
+import NightStayScreen from "./features/fields/NightStayScreen";
+import PostForm from "./features/fields/PostForm";
+import PostDetail from "./features/fields/PostDetail";
+import MyPostsScreen from "./features/fields/MyPostsScreen";
+import HerdLocationSync from "./features/fields/HerdLocationSync";
 
 function Protected({ children }) {
   const { user, loading } = useAuth();
@@ -47,6 +54,7 @@ export default function App() {
 
   return (
     <div style={{ position: "relative", maxWidth: 480, margin: "0 auto" }}>
+      <HerdLocationSync />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -78,6 +86,14 @@ export default function App() {
         <Route path="/videos/new" element={<Protected><AddVideo /></Protected>} />
         <Route path="/messages" element={<Protected><ConversationsScreen /></Protected>} />
         <Route path="/messages/:interactionId" element={<Protected><ConversationScreen /></Protected>} />
+        {/* v62 */}
+        <Route path="/residue" element={<Protected><ResidueScreen /></Protected>} />
+        <Route path="/residue/new" element={<Protected><PostForm /></Protected>} />
+        <Route path="/night-stay" element={<Protected><NightStayScreen /></Protected>} />
+        <Route path="/night-stay/new" element={<Protected><PostForm /></Protected>} />
+        <Route path="/field-posts/mine" element={<Protected><MyPostsScreen /></Protected>} />
+        <Route path="/field-posts/:id" element={<Protected><PostDetail /></Protected>} />
+        <Route path="/field-posts/:id/edit" element={<Protected><PostForm /></Protected>} />
         {import.meta.env.DEV && (
           <Route path="/developer/messaging-qa" element={<Protected><MessagingQA /></Protected>} />
         )}

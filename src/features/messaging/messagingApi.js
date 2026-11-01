@@ -31,7 +31,7 @@ async function tryNotify(recipientId, message, extra) {
  * "Contact Publisher" taps can never create duplicates.
  */
 export async function getOrCreatePublicationInteraction({
-  contextId, requesterId, recipientId, publicationTitle, publicationImageUrl,
+  contextId, requesterId, recipientId, publicationTitle, publicationImageUrl, contextKind,
 }) {
   if (!contextId || !requesterId || !recipientId) {
     throw new Error("Missing publication or participant information.");
@@ -54,6 +54,8 @@ export async function getOrCreatePublicationInteraction({
       publicationOwnerId: recipientId,
       publicationTitle: publicationTitle || "",
       publicationImageUrl: publicationImageUrl || null,
+      // v62: "fieldPost" for Crop Residue / Night Stay / Herd posts; absent for lands.
+      ...(contextKind ? { contextKind } : {}),
       status: "active",
       lastMessage: "",
       lastMessageSenderId: null,

@@ -69,6 +69,7 @@ export function normalizeInteraction(id, raw = {}) {
     publicationOwnerId: raw.publicationOwnerId || raw.recipientId || null,
     publicationTitle: raw.publicationTitle || "",
     publicationImageUrl: raw.publicationImageUrl || null,
+    contextKind: raw.contextKind || "land", // v62: "land" | "fieldPost"
     status: raw.status || "active",
     lastMessage: raw.lastMessage || "",
     lastMessageSenderId: raw.lastMessageSenderId || null,

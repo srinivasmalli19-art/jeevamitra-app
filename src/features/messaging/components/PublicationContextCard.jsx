@@ -24,7 +24,7 @@ export default function PublicationContextCard({ interaction }) {
           display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24,
         }}
       >
-        {!interaction.publicationImageUrl && "🌾"}
+        {!interaction.publicationImageUrl && (interaction.contextKind === "fieldPost" ? "🐑" : "🌾")}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div className="meta" style={{ fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".05em" }}>
@@ -38,7 +38,7 @@ export default function PublicationContextCard({ interaction }) {
         <button
           className="link-btn"
           style={{ flexShrink: 0 }}
-          onClick={() => nav(`/lands/${interaction.contextId}`)}
+          onClick={() => nav(interaction.contextKind === "fieldPost" ? `/field-posts/${interaction.contextId}` : `/lands/${interaction.contextId}`)}
         >
           {t("msg_view_publication")}
         </button>
