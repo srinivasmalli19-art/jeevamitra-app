@@ -50,3 +50,4 @@ key.properties
 .env
 .env.*
 !.env.example
+functions/node_modules
