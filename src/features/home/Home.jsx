@@ -49,7 +49,7 @@ export default function Home() {
   }, [user.uid]);
 
   const hr = new Date().getHours();
-  const greeting = hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening";
+  const greeting = hr < 12 ? t("ex_good_morning") : hr < 17 ? t("ex_good_afternoon") : t("ex_good_evening");
 
   const cardsAll = {
     nearbyLands: {
@@ -88,14 +88,14 @@ export default function Home() {
     <div className="app-shell">
       <AppBar
         variant="top"
-        title={`${greeting}, ${profile?.name || "there"}`}
+        title={`${greeting}, ${profile?.name || t("ex_friend")}`}
         subtitle="JeevaMitra"
         onMap={() => nav("/map")}
         onBell={() => setNotifOpen(true)}
         unread={unread > 0}
       />
       <div className="content">
-        {loading && <p className="meta">Loading...</p>}
+        {loading && <p className="meta">{t("loading")}</p>}
 
         {!loading && (
           <div className="stat-grid" style={{ marginBottom: 18 }}>
@@ -111,7 +111,7 @@ export default function Home() {
           </div>
         )}
 
-        <h3 style={{ fontSize: 15, margin: "0 0 10px" }}>Quick actions</h3>
+        <h3 style={{ fontSize: 15, margin: "0 0 10px" }}>{t("ex_quick_actions")}</h3>
         <div className="qa-row">
           <button className="qa-btn" onClick={() => nav("/lands/new")}>
             <span className="qa-icon">🌾</span><span>{t("home_qa_postLand")}</span>
@@ -138,7 +138,7 @@ export default function Home() {
           <h3 style={{ fontSize: 15, margin: 0 }}>{t("home_yourBookings_title")}</h3>
           <Link to="/bookings" className="see-all" style={{ fontSize: 11.5, fontWeight: 600, color: "var(--pasture)", textDecoration: "none" }}>{t("see_all")}</Link>
         </div>
-        {!loading && mine.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>You haven't booked anything yet.</p>}
+        {!loading && mine.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>{t("ex_no_bookings_yet")}</p>}
         {mine.slice(0, 3).map((b) => (
           <div key={b.id} className="card" style={{ cursor: "default" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -155,7 +155,7 @@ export default function Home() {
           <h3 style={{ fontSize: 15, margin: 0 }}>{t("home_yourPostedLands_title")}</h3>
           <Link to="/lands/mine" className="see-all" style={{ fontSize: 11.5, fontWeight: 600, color: "var(--pasture)", textDecoration: "none" }}>{t("see_all")}</Link>
         </div>
-        {!loading && myLands.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>You haven't posted any land yet.</p>}
+        {!loading && myLands.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>{t("ex_no_lands_posted")}</p>}
         {myLands.slice(0, 3).map((l) => (
           <Link key={l.id} to={`/lands/${l.id}`} style={{ textDecoration: "none", color: "inherit" }}>
             <div className="card stub">
@@ -184,7 +184,7 @@ export default function Home() {
                     <div className="card-title">{l.title}</div>
                     <div className="meta">{l.village}, {l.district}</div>
                     <div style={{ marginTop: 6 }}>
-                      <span className={`pill ${available ? "pill-green" : "pill-red"}`}>{available ? "Available" : "Booked"}</span>{" "}
+                      <span className={`pill ${available ? "pill-green" : "pill-red"}`}>{available ? t("available") : t("ex_booked")}</span>{" "}
                       <span className="pill pill-gold">{l.acres} acres</span>
                     </div>
                   </div>

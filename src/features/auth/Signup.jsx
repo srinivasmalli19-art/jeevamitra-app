@@ -36,34 +36,34 @@ export default function Signup() {
 
   return (
     <div className="app-shell">
-      <AppBar variant="top" title="Create your account" subtitle="JeevaMitra" />
+      <AppBar variant="top" title={t("signup_title")} subtitle="JeevaMitra" />
       <div className="content">
         {error && <div className="error-box">{error}</div>}
         <form onSubmit={handleSubmit}>
-          <div className="field"><label>Full name</label>
+          <div className="field"><label>{t("fullName")}</label>
             <input required value={form.name} onChange={(e) => set("name", e.target.value)} />
           </div>
           <div className="field"><label>{t("phone")}</label>
-            <input required type="tel" placeholder="10-digit number" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+            <input required type="tel" placeholder={t("ex_phone_placeholder")} value={form.phone} onChange={(e) => set("phone", e.target.value)} />
           </div>
           <LocationPicker value={form} onChange={setLocation} />
-          <div className="field"><label>I mainly...</label>
+          <div className="field"><label>{t("ex_i_mainly")}</label>
             <select value={form.profileType} onChange={(e) => set("profileType", e.target.value)}>
-              <option value="livestock">Own livestock</option>
-              <option value="land">Provide grazing/fodder land</option>
-              <option value="both">Both</option>
+              <option value="livestock">{t("ex_own_livestock")}</option>
+              <option value="land">{t("ex_provide_land")}</option>
+              <option value="both">{t("ex_both")}</option>
             </select>
           </div>
-          <div className="field"><label>Email</label>
+          <div className="field"><label>{t("email")}</label>
             <input required type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
           </div>
-          <div className="field"><label>Password</label>
+          <div className="field"><label>{t("password")}</label>
             <input required type="password" minLength={6} value={form.password} onChange={(e) => set("password", e.target.value)} />
           </div>
-          <button className="btn-primary" disabled={loading}>{loading ? "Creating account..." : "Create account"}</button>
+          <button className="btn-primary" disabled={loading}>{loading ? t("ex_creating_account") : t("signup_button")}</button>
         </form>
         <p style={{ textAlign: "center", marginTop: 16, fontSize: 13 }}>
-          Already have an account? <Link to="/login">Log in</Link>
+          {t("have_account")} <Link to="/login">{t("login_button")}</Link>
         </p>
       </div>
     </div>
