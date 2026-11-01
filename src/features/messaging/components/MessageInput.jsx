@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { useLanguage } from "../../../i18n/LanguageContext";
 import { validateMessageText, MAX_MESSAGE_LENGTH } from "../messaging.logic";
+import MediaComposer from "./MediaComposer"; // v62
 
 // Fixed-bottom composer. Multiline, trims whitespace, disables send for
 // empty/whitespace-only input, prevents duplicate sends while in flight, and
 // surfaces a retry for the last failed message.
-export default function MessageInput({ onSend, sending, error, onClearError }) {
+export default function MessageInput({ onSend, sending, error, onClearError, media }) {
   const { t } = useLanguage();
   const [text, setText] = useState("");
+  // v62: "photo" | "voice" | null. `media` = { sendMedia, sending, progress, error, clearError } (optional).
+  const [panel, setPanel] = useState(null);
   const [failedText, setFailedText] = useState("");
 
   const canSend = validateMessageText(text).ok && !sending;
@@ -59,7 +62,23 @@ export default function MessageInput({ onSend, sending, error, onClearError }) {
           </button>
         </div>
       )}
-      <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
+      {media && panel && (
+        <MediaComposer
+          mode={panel}
+          onCancel={() => { media.clearError(); setPanel(null); }}
+          onSend={media.sendMedia}
+          sending={media.sending}
+          progress={media.progress}
+          error={media.error}
+        />
+      )}
+      <div style={{ display: "flex", gap: 8, alignItems: "flex-end", ...(panel ? { display: "none" } : {}) }}>
+        {media && (
+          <>
+            <button type="button" className="chat-icon-btn" aria-label={t("msg_attach_photo")} onClick={() => setPanel("photo")}>📷</button>
+            <button type="button" className="chat-icon-btn" aria-label={t("msg_record_voice")} onClick={() => setPanel("voice")}>🎤</button>
+          </>
+        )}
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}

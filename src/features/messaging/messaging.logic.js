@@ -1,3 +1,5 @@
+import { normalizeMedia } from "./messaging.media.js";
+
 // Pure, Firebase-free logic for the contextual messaging feature.
 // Kept import-free of Firestore so it can be unit-tested with `node --test`
 // and reused from both the data layer and the UI without side effects.
@@ -88,6 +90,8 @@ export function normalizeMessage(id, raw = {}) {
     receiverId: raw.receiverId || null,
     type: raw.type || "text",
     text: raw.text || "",
+    caption: raw.caption || "", // v62
+    media: normalizeMedia(raw.media), // v62: { voice } | { images } | null
     createdAt: raw.createdAt || null,
     readAt: raw.readAt || null,
     status: raw.status || "sent",

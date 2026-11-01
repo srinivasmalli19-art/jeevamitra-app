@@ -4,6 +4,9 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase/init";
 import { createNotification } from "../notifications/notificationsApi";
+// v62: voice / photo messages
+import { uploadBlob, deleteStoragePath } from "../../utils/media";
+import { buildVoiceFields, buildImageFields, previewForMedia, chatMediaFolder } from "./messaging.media";
 import {
   interactionIdFor, validateMessageText, normalizeInteraction, normalizeMessage,
   myUnreadField, otherUnreadField, mergeInteractions,
@@ -248,4 +251,85 @@ export async function markMessageAsRead(interactionId, messageId) {
     readAt: serverTimestamp(),
     status: "read",
   });
+}
+
+// ---------------------------------------------------------------------------
+// v62: voice and photo messages. Files go to Firebase Storage under
+// chats/{interactionId}/{senderId}/ (see storage.rules); the message doc keeps
+// a fallback `text` so version 61 still shows a readable line.
+// sendTextMessage above is unchanged.
+
+/**
+ * @param kind "voice" | "image"
+ * @param voice { blob, mimeType, durationSec }            (kind voice)
+ * @param images [{ blob }]  1..5 compressed JPEG blobs     (kind image)
+ * @param onProgress(n, total) optional
+ */
+export async function sendMediaMessage({ interactionId, senderId, kind, voice, images, caption, onProgress }) {
+  const folder = chatMediaFolder(interactionId, senderId);
+  const uploaded = [];
+  let fields;
+  try {
+    if (kind === "voice") {
+      const up = await uploadBlob(folder, voice.blob, voice.mimeType || "audio/webm");
+      uploaded.push(up.path);
+      fields = buildVoiceFields({ ...up, durationSec: voice.durationSec, mimeType: voice.mimeType });
+    } else {
+      const ups = [];
+      for (let i = 0; i < (images || []).length; i++) {
+        onProgress?.(i + 1, images.length);
+        const up = await uploadBlob(folder, images[i].blob, "image/jpeg");
+        uploaded.push(up.path);
+        ups.push(up);
+      }
+      fields = buildImageFields(ups, caption);
+    }
+  } catch (err) {
+    await Promise.all(uploaded.map(deleteStoragePath));
+    throw err;
+  }
+
+  const ref = interactionRef(interactionId);
+  let receiverId = null;
+  let publicationTitle = "";
+  try {
+    await runTransaction(db, async (tx) => {
+      const snap = await tx.get(ref);
+      if (!snap.exists()) throw new Error("This conversation no longer exists.");
+      const it = normalizeInteraction(snap.id, snap.data());
+      if (it.requesterId !== senderId && it.recipientId !== senderId) {
+        throw new Error("You are not a participant in this conversation.");
+      }
+      receiverId = it.requesterId === senderId ? it.recipientId : it.requesterId;
+      publicationTitle = it.publicationTitle;
+      tx.set(doc(messagesColRef(interactionId)), {
+        senderId,
+        receiverId,
+        ...fields,
+        createdAt: serverTimestamp(),
+        readAt: null,
+        status: "sent",
+      });
+      const field = otherUnreadField(it, senderId);
+      const current = field === "recipientUnreadCount" ? it.recipientUnreadCount : it.requesterUnreadCount;
+      tx.update(ref, {
+        lastMessage: previewForMedia(fields),
+        lastMessageSenderId: senderId,
+        lastMessageAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        [field]: (current || 0) + 1,
+      });
+    });
+  } catch (err) {
+    await Promise.all(uploaded.map(deleteStoragePath));
+    throw err;
+  }
+
+  if (receiverId) {
+    await tryNotify(receiverId, `New message about "${publicationTitle || "your publication"}".`, {
+      type: "new_message",
+      link: `/messages/${interactionId}`,
+    });
+  }
+  return true;
 }
