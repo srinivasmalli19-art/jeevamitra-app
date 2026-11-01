@@ -24,7 +24,7 @@ export default function VetDetail() {
   }, [id]);
 
   if (loading) return <div className="app-shell"><div className="content"><p className="meta">{t("loading")}</p></div></div>;
-  if (!vet) return <div className="app-shell"><div className="content"><p>{t("ex_vet_not_found")}</p></div></div>;
+  if (!vet || vet.hidden === true) return <div className="app-shell"><div className="content"><p>{t("ex_vet_not_found")}</p></div></div>;
 
   async function handleDelete() {
     if (!confirm(t("ex_remove_vet_confirm"))) return;

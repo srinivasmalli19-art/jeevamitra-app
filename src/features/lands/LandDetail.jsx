@@ -30,7 +30,8 @@ export default function LandDetail() {
   }, [id]);
 
   if (loading) return <div className="app-shell"><div className="content"><p className="meta">{t("loading")}</p></div></div>;
-  if (!land) return <div className="app-shell"><div className="content"><p>{t("ex_land_not_found")}</p></div></div>;
+  // v62: a land paused from Central Admin is visible only to its owner.
+  if (!land || (land.hidden === true && land.ownerId !== user.uid)) return <div className="app-shell"><div className="content"><p>{t("ex_land_not_found")}</p></div></div>;
 
   const isOwner = land.ownerId === user.uid;
 

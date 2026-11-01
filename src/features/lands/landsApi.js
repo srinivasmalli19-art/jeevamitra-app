@@ -44,7 +44,8 @@ export async function getLand(landId) {
 // All lands (marketplace discovery)
 export async function listAllLands() {
   const snap = await getDocs(query(landsCol, orderBy("createdAt", "desc")));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  // v62: items paused from Central Admin (hidden: true) are not shown.
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((x) => x.hidden !== true);
 }
 
 // Lands owned by a specific user ("My Lands")

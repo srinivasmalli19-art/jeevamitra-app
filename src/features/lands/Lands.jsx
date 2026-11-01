@@ -137,6 +137,7 @@ function MyLandsTab() {
               <div className="card-title">{l.title}</div>
               <div className="meta">{l.village}, {l.district} · {tf("ex_n_acres", { n: l.acres })}</div>
               <div className="price" style={{ marginTop: 6 }}>₹{l.price}/{unitLabel(t, l.unit)}</div>
+              {l.hidden === true && <span className="pill pill-red" style={{ marginTop: 6, display: "inline-block" }}>{t("ex_paused_by_team")}</span>}
             </div>
           </div>
         </Link>

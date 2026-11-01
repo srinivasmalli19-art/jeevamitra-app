@@ -20,7 +20,8 @@ export async function createStory(adminUid, { title, body, authorName, photoUrl 
 
 export async function listStories() {
   const snap = await getDocs(query(storiesCol, orderBy("createdAt", "desc")));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  // v62: items paused from Central Admin (hidden: true) are not shown.
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((x) => x.hidden !== true);
 }
 
 export async function getStory(id) {

@@ -21,7 +21,7 @@ export default function StoryDetail() {
   }, [id]);
 
   if (loading) return <div className="app-shell"><div className="content"><p className="meta">{t("loading")}</p></div></div>;
-  if (!story) return <div className="app-shell"><div className="content"><p>{t("ex_story_not_found")}</p></div></div>;
+  if (!story || story.hidden === true) return <div className="app-shell"><div className="content"><p>{t("ex_story_not_found")}</p></div></div>;
 
   async function handleDelete() {
     if (!confirm(t("ex_delete_story_confirm"))) return;

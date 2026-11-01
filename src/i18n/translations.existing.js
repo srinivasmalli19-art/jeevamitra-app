@@ -222,6 +222,8 @@ export const existing = {
     ex_layer_lands: "Lands",
     ex_layer_vets: "Vets",
     ex_layer_alerts: "Alerts",
+
+    ex_paused_by_team: "Paused by JeevaMitra team — not shown to others",
   },
   te: {
     ex_state: "రాష్ట్రం", ex_select_state: "రాష్ట్రాన్ని ఎంచుకోండి", ex_district: "జిల్లా", ex_select_district: "జిల్లాను ఎంచుకోండి",
@@ -443,6 +445,8 @@ export const existing = {
     ex_layer_lands: "భూములు",
     ex_layer_vets: "పశువైద్యులు",
     ex_layer_alerts: "హెచ్చరికలు",
+
+    ex_paused_by_team: "JeevaMitra బృందం నిలిపివేసింది — ఇతరులకు కనిపించదు",
   },
   hi: {
     ex_state: "राज्य", ex_select_state: "राज्य चुनें", ex_district: "ज़िला", ex_select_district: "ज़िला चुनें",
@@ -664,5 +668,7 @@ export const existing = {
     ex_layer_lands: "ज़मीन",
     ex_layer_vets: "पशु चिकित्सक",
     ex_layer_alerts: "चेतावनियाँ",
+
+    ex_paused_by_team: "JeevaMitra टीम ने रोका है — दूसरों को नहीं दिखेगा",
   },
 };
