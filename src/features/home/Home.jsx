@@ -11,6 +11,7 @@ import AppBar from "../../components/AppBar";
 import BottomSheet from "../../components/BottomSheet";
 import BottomNav from "../../components/BottomNav";
 import NotificationsSheet from "../notifications/NotificationsSheet";
+import { speciesLabel, unitLabel, bookingStatusLabel } from "../../i18n/labels";
 
 function severityDot(sev) {
   const cls = sev === "high" ? "sev-high" : sev === "medium" ? "sev-med" : "sev-low";
@@ -19,7 +20,7 @@ function severityDot(sev) {
 
 export default function Home() {
   const { user, profile } = useAuth();
-  const { t } = useLanguage();
+  const { t, tf } = useLanguage();
   const nav = useNavigate();
   const [lands, setLands] = useState([]);
   const [myLands, setMyLands] = useState([]);
@@ -49,7 +50,7 @@ export default function Home() {
   }, [user.uid]);
 
   const hr = new Date().getHours();
-  const greeting = hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening";
+  const greeting = hr < 12 ? t("ex_good_morning") : hr < 17 ? t("ex_good_afternoon") : t("ex_good_evening");
 
   const cardsAll = {
     nearbyLands: {
@@ -88,14 +89,14 @@ export default function Home() {
     <div className="app-shell">
       <AppBar
         variant="top"
-        title={`${greeting}, ${profile?.name || "there"}`}
+        title={`${greeting}, ${profile?.name || t("ex_friend")}`}
         subtitle="JeevaMitra"
         onMap={() => nav("/map")}
         onBell={() => setNotifOpen(true)}
         unread={unread > 0}
       />
       <div className="content">
-        {loading && <p className="meta">Loading...</p>}
+        {loading && <p className="meta">{t("loading")}</p>}
 
         {!loading && (
           <div className="stat-grid" style={{ marginBottom: 18 }}>
@@ -111,7 +112,7 @@ export default function Home() {
           </div>
         )}
 
-        <h3 style={{ fontSize: 15, margin: "0 0 10px" }}>Quick actions</h3>
+        <h3 style={{ fontSize: 15, margin: "0 0 10px" }}>{t("ex_quick_actions")}</h3>
         <div className="qa-row">
           <button className="qa-btn" onClick={() => nav("/lands/new")}>
             <span className="qa-icon">🌾</span><span>{t("home_qa_postLand")}</span>
@@ -125,13 +126,20 @@ export default function Home() {
           <button className="qa-btn" onClick={() => nav("/alerts/new")}>
             <span className="qa-icon">📢</span><span>{t("home_qa_reportAlert")}</span>
           </button>
+          {/* v62 */}
+          <button className="qa-btn" onClick={() => nav("/residue")}>
+            <span className="qa-icon">🌾</span><span>{t("home_qa_cropResidue")}</span>
+          </button>
+          <button className="qa-btn" onClick={() => nav("/night-stay")}>
+            <span className="qa-icon">🐑</span><span>{t("home_qa_nightStay")}</span>
+          </button>
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "18px 0 10px" }}>
           <h3 style={{ fontSize: 15, margin: 0 }}>{t("home_yourBookings_title")}</h3>
           <Link to="/bookings" className="see-all" style={{ fontSize: 11.5, fontWeight: 600, color: "var(--pasture)", textDecoration: "none" }}>{t("see_all")}</Link>
         </div>
-        {!loading && mine.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>You haven't booked anything yet.</p>}
+        {!loading && mine.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>{t("ex_no_bookings_yet")}</p>}
         {mine.slice(0, 3).map((b) => (
           <div key={b.id} className="card" style={{ cursor: "default" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -139,7 +147,7 @@ export default function Home() {
                 <div className="card-title">{b.landTitle}</div>
                 <div className="meta">{b.from} → {b.to}</div>
               </div>
-              <span className={`pill ${b.status === "confirmed" ? "pill-green" : b.status === "pending" ? "pill-gold" : "pill-red"}`}>{b.status[0].toUpperCase() + b.status.slice(1)}</span>
+              <span className={`pill ${b.status === "confirmed" ? "pill-green" : b.status === "pending" ? "pill-gold" : "pill-red"}`}>{bookingStatusLabel(t, b.status)}</span>
             </div>
           </div>
         ))}
@@ -148,16 +156,16 @@ export default function Home() {
           <h3 style={{ fontSize: 15, margin: 0 }}>{t("home_yourPostedLands_title")}</h3>
           <Link to="/lands/mine" className="see-all" style={{ fontSize: 11.5, fontWeight: 600, color: "var(--pasture)", textDecoration: "none" }}>{t("see_all")}</Link>
         </div>
-        {!loading && myLands.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>You haven't posted any land yet.</p>}
+        {!loading && myLands.length === 0 && <p className="meta" style={{ marginBottom: 8 }}>{t("ex_no_lands_posted")}</p>}
         {myLands.slice(0, 3).map((l) => (
           <Link key={l.id} to={`/lands/${l.id}`} style={{ textDecoration: "none", color: "inherit" }}>
             <div className="card stub">
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
                   <div className="card-title">{l.title}</div>
-                  <div className="meta">{l.village}, {l.district} · {l.acres} acres</div>
+                  <div className="meta">{l.village}, {l.district} · {tf("ex_n_acres", { n: l.acres })}</div>
                 </div>
-                <div className="price">₹{l.price}/{l.unit}</div>
+                <div className="price">₹{l.price}/{unitLabel(t, l.unit)}</div>
               </div>
             </div>
           </Link>
@@ -177,11 +185,11 @@ export default function Home() {
                     <div className="card-title">{l.title}</div>
                     <div className="meta">{l.village}, {l.district}</div>
                     <div style={{ marginTop: 6 }}>
-                      <span className={`pill ${available ? "pill-green" : "pill-red"}`}>{available ? "Available" : "Booked"}</span>{" "}
-                      <span className="pill pill-gold">{l.acres} acres</span>
+                      <span className={`pill ${available ? "pill-green" : "pill-red"}`}>{available ? t("available") : t("ex_booked")}</span>{" "}
+                      <span className="pill pill-gold">{tf("ex_n_acres", { n: l.acres })}</span>
                     </div>
                   </div>
-                  <div className="price">₹{l.price}/{l.unit}</div>
+                  <div className="price">₹{l.price}/{unitLabel(t, l.unit)}</div>
                 </div>
               </div>
             </Link>
@@ -198,7 +206,7 @@ export default function Home() {
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
                   <div className="card-title" style={{ display: "flex", alignItems: "center" }}>{severityDot(a.severity)}{a.disease}</div>
-                  <div className="meta">{a.species} · {a.village}, {a.district}</div>
+                  <div className="meta">{speciesLabel(t, a.species)} · {a.village}, {a.district}</div>
                 </div>
               </div>
             </div>

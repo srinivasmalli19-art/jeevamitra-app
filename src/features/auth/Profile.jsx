@@ -11,9 +11,9 @@ import SettingsSheet from "../../components/SettingsSheet";
 import NotificationsSheet from "../notifications/NotificationsSheet";
 
 const meta = {
-  livestock: { emoji: "🐄", label: "Livestock Owner" },
-  land: { emoji: "🌾", label: "Fodder Land Provider" },
-  both: { emoji: "🔄", label: "Both" },
+  livestock: { emoji: "🐄", label: "ex_pt_livestock" },
+  land: { emoji: "🌾", label: "ex_pt_land" },
+  both: { emoji: "🔄", label: "ex_both" },
 };
 
 export default function Profile() {
@@ -48,7 +48,7 @@ export default function Profile() {
               <div className="meta">{profile.village}, {profile.district}</div>
             </div>
           ) : (
-            <div className="meta">No profile info saved yet — tap "Edit profile" below.</div>
+            <div className="meta">{t("ex_no_profile")}</div>
           )}
         </div>
         <Link to="/profile/edit" style={{ textDecoration: "none" }}>
@@ -72,6 +72,19 @@ export default function Profile() {
         <Link to="/videos" style={{ textDecoration: "none" }}>
           <button className="btn-secondary" style={{ marginTop: 10 }}>🎬 {t("profile_videos_link")}</button>
         </Link>
+        {/* v62 */}
+        <Link to="/residue" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>🌾 {t("profile_cropResidue_link")}</button>
+        </Link>
+        <Link to="/night-stay" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>🐑 {t("profile_nightStay_link")}</button>
+        </Link>
+        <Link to="/field-posts/mine" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>📋 {t("profile_myFieldPosts_link")}</button>
+        </Link>
+        <Link to="/settings/notifications" style={{ textDecoration: "none" }}>
+          <button className="btn-secondary" style={{ marginTop: 10 }}>🔔 {t("profile_notifSettings_link")}</button>
+        </Link>
 
         <h3 style={{ fontSize: 15, margin: "18px 0 10px" }}>{t("profile_type")}</h3>
         {Object.entries(meta).map(([key, m]) => {
@@ -88,7 +101,7 @@ export default function Profile() {
               }}
               onClick={() => updateProfileType(key)}
             >
-              <div className="card-title" style={{ margin: 0 }}>{m.emoji} {m.label}</div>
+              <div className="card-title" style={{ margin: 0 }}>{m.emoji} {t(m.label)}</div>
               {selected && <span style={{ color: "var(--pasture)", fontSize: 20, fontWeight: 700 }}>✓</span>}
             </div>
           );

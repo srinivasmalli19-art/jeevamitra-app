@@ -9,11 +9,14 @@ import { OTHER_DISTRICT } from "../../data/indiaLocations";
 import { useToast } from "../../components/ToastContext";
 import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
+import { useLanguage } from "../../i18n/LanguageContext";
+import { amenityLabel, errText } from "../../i18n/labels";
 
 const ALL_AMENITIES = ["Water source", "Shade", "Fenced", "Borewell", "Electricity", "Road access"];
 
 export default function AddLand() {
   const { user } = useAuth();
+  const { t, tf } = useLanguage();
   const showToast = useToast();
   const nav = useNavigate();
   const [form, setForm] = useState({
@@ -52,7 +55,7 @@ export default function AddLand() {
       set("lat", lat);
       set("lng", lng);
     } catch (err) {
-      setLocError(err.message);
+      setLocError(errText(t, err));
     } finally {
       setLocating(false);
     }
@@ -65,11 +68,11 @@ export default function AddLand() {
     try {
       let photoUrl = null;
       if (photoFile) {
-        setUploadStatus("Compressing photo...");
+        setUploadStatus(t("ex_compressing_photo"));
         try {
           photoUrl = await compressImageToDataUrl(photoFile);
         } catch (err) {
-          setPhotoError(err.message + " You can still save the listing without a photo.");
+          setPhotoError(errText(t, err) + " " + t("ex_save_without_photo"));
           setUploadStatus("");
           setBusy(false);
           return;
@@ -81,7 +84,7 @@ export default function AddLand() {
         photoUrl,
       });
       nav(`/lands/${id}`);
-      showToast("Land listing saved!");
+      showToast(t("ex_land_saved"));
     } finally {
       setBusy(false);
       setUploadStatus("");
@@ -90,35 +93,35 @@ export default function AddLand() {
 
   return (
     <div className="app-shell">
-      <AppBar variant="detail" title="Post land" onBack={() => nav(-1)} />
+      <AppBar variant="detail" title={t("ex_post_land")} onBack={() => nav(-1)} />
       <div className="content">
         <form onSubmit={handleSubmit}>
-          <div className="field"><label>Title</label>
+          <div className="field"><label>{t("ex_title")}</label>
             <input required value={form.title} onChange={(e) => set("title", e.target.value)} />
           </div>
           <LocationPicker value={form} onChange={(next) => setForm((f) => ({ ...f, ...next }))} />
           <div className="row">
-            <div className="field"><label>Acres</label>
+            <div className="field"><label>{t("ex_acres")}</label>
               <input required type="number" step="0.1" value={form.acres} onChange={(e) => set("acres", e.target.value)} />
             </div>
-            <div className="field"><label>Price (₹/month)</label>
+            <div className="field"><label>{t("ex_price_month")}</label>
               <input required type="number" value={form.price} onChange={(e) => set("price", e.target.value)} />
             </div>
           </div>
-          <div className="field"><label>Description</label>
+          <div className="field"><label>{t("ex_description")}</label>
             <textarea value={form.description} onChange={(e) => set("description", e.target.value)} />
           </div>
-          <div className="field"><label>Amenities</label>
+          <div className="field"><label>{t("ex_amenities")}</label>
             <div className="chip-row">
               {ALL_AMENITIES.map((a) => (
                 <button key={a} type="button" className={`chip ${form.amenities.includes(a) ? "active" : ""}`} onClick={() => toggleAmenity(a)}>
-                  {a}
+                  {amenityLabel(t, a)}
                 </button>
               ))}
             </div>
           </div>
           <div className="field">
-            <label>Photo</label>
+            <label>{t("ex_photo")}</label>
             <input type="file" accept="image/*" capture="environment" onChange={handlePhotoChange} />
             {photoPreview && (
               <img src={photoPreview} alt="Preview" style={{ width: "100%", borderRadius: 12, marginTop: 8, maxHeight: 200, objectFit: "cover" }} />
@@ -126,14 +129,14 @@ export default function AddLand() {
             {photoError && <div className="error-box" style={{ marginTop: 8 }}>{photoError}</div>}
           </div>
           <div className="field">
-            <label>Location (for "nearby" search)</label>
+            <label>{t("ex_location_nearby")}</label>
             <button type="button" className={form.lat ? "btn-primary" : "btn-secondary"} onClick={handleUseLocation} disabled={locating} style={{ width: "100%" }}>
-              {locating ? "Getting your location..." : form.lat ? `✓ Location captured (${form.lat.toFixed(4)}, ${form.lng.toFixed(4)})` : "📍 Use my current location"}
+              {locating ? t("ex_getting_location") : form.lat ? tf("ex_location_captured", { lat: form.lat.toFixed(4), lng: form.lng.toFixed(4) }) : t("ex_use_my_location")}
             </button>
             {locError && <div className="error-box" style={{ marginTop: 8 }}>{locError}</div>}
-            <p className="meta" style={{ marginTop: 6 }}>Stand at or near the land when you tap this, so distance search works accurately. Optional, but recommended.</p>
+            <p className="meta" style={{ marginTop: 6 }}>{t("ex_stand_near_land")}</p>
           </div>
-          <button className="btn-primary" disabled={busy}>{uploadStatus || (busy ? "Saving..." : "Save listing")}</button>
+          <button className="btn-primary" disabled={busy}>{uploadStatus || (busy ? t("ex_saving") : t("ex_save_listing"))}</button>
         </form>
       </div>
       <BottomNav />

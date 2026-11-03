@@ -6,18 +6,22 @@
   "scripts": {
     "dev": "vite",
     "dev:emulator": "VITE_USE_EMULATOR=1 vite",
-    "emulators": "npx -y firebase-tools emulators:start --only auth,firestore --project jeeva-575fd",
+    "emulators": "npx -y firebase-tools emulators:start --only auth,firestore --project jeevamitra",
     "build": "vite build",
     "lint": "oxlint",
     "test": "node --test \"src/**/*.test.js\"",
     "preview": "vite preview",
     "android:sync": "vite build && npx cap sync android",
-    "android:open": "npx cap open android"
+    "android:open": "npx cap open android",
+    "test:rules": "npx -y firebase-tools@15 emulators:exec --only firestore,storage --project demo-jeevamitra-rules \"node --test tests/rules/\""
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
     "@capacitor/core": "^8.5.0",
+    "@capacitor/push-notifications": "^8.1.3",
+    "@googlemaps/js-api-loader": "^2.1.3",
     "firebase": "^12.18.0",
+    "geofire-common": "^6.0.0",
     "leaflet": "^1.9.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -27,6 +31,7 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.5.0",
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",

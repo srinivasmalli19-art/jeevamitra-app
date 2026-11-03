@@ -4,6 +4,7 @@ import { listAllLands, listMyLands } from "./landsApi";
 import { getCurrentPosition, distanceKm } from "../../utils/geo";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../i18n/LanguageContext";
+import { unitLabel, errText } from "../../i18n/labels";
 import { listMyNotifications } from "../notifications/notificationsApi";
 import AppBar from "../../components/AppBar";
 import BottomSheet from "../../components/BottomSheet";
@@ -11,6 +12,7 @@ import BottomNav from "../../components/BottomNav";
 import NotificationsSheet from "../notifications/NotificationsSheet";
 
 function DiscoverTab() {
+  const { t, tf } = useLanguage();
   const [lands, setLands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
@@ -29,7 +31,7 @@ function DiscoverTab() {
       const pos = await getCurrentPosition();
       setMyLoc(pos);
     } catch (err) {
-      setLocError(err.message);
+      setLocError(errText(t, err));
     } finally {
       setLocating(false);
     }
@@ -54,20 +56,20 @@ function DiscoverTab() {
     <>
       <div className="searchbar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" /></svg>
-        <input placeholder="Search village, district, or title" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input placeholder={t("ex_search_lands")} value={q} onChange={(e) => setQ(e.target.value)} />
       </div>
 
       <button className={myLoc ? "btn-primary" : "btn-secondary"} style={{ marginBottom: 12 }} onClick={handleFindNearMe} disabled={locating}>
-        {locating ? "Finding your location..." : myLoc ? "✓ Sorted by distance from you" : "📍 Find lands near me"}
+        {locating ? t("ex_finding_location") : myLoc ? t("ex_sorted_by_distance") : t("ex_find_lands_near")}
       </button>
       {locError && <div className="error-box">{locError}</div>}
 
-      {loading && <p className="meta">Loading lands from your database...</p>}
+      {loading && <p className="meta">{t("ex_loading_lands")}</p>}
       {!loading && filtered.length === 0 && (
         <div className="empty-state">
           <div className="glyph">🌾</div>
-          <h3>No lands listed yet</h3>
-          <p>Be the first — post a grazing or fodder land from "My lands".</p>
+          <h3>{t("ex_no_lands_listed")}</h3>
+          <p>{t("ex_be_first")}</p>
         </div>
       )}
       {filtered.map((l) => {
@@ -85,12 +87,12 @@ function DiscoverTab() {
                   <div className="card-title">{l.title}</div>
                   <div className="meta">{l.village}, {l.district}</div>
                   <div style={{ marginTop: 6 }}>
-                    <span className={`pill ${available ? "pill-green" : "pill-red"}`}>{available ? "Available" : "Has bookings"}</span>{" "}
-                    <span className="pill pill-gold">{l.acres} acres</span>{" "}
-                    {myLoc && l._dist !== null && <span className="pill pill-sky">{l._dist.toFixed(1)} km away</span>}
+                    <span className={`pill ${available ? "pill-green" : "pill-red"}`}>{available ? t("available") : t("ex_has_bookings")}</span>{" "}
+                    <span className="pill pill-gold">{tf("ex_n_acres", { n: l.acres })}</span>{" "}
+                    {myLoc && l._dist !== null && <span className="pill pill-sky">{tf("ex_km_away", { n: l._dist.toFixed(1) })}</span>}
                   </div>
                 </div>
-                <div className="price">₹{l.price}/{l.unit}</div>
+                <div className="price">₹{l.price}/{unitLabel(t, l.unit)}</div>
               </div>
             </div>
           </Link>
@@ -101,6 +103,7 @@ function DiscoverTab() {
 }
 
 function MyLandsTab() {
+  const { t, tf } = useLanguage();
   const { user } = useAuth();
   const [lands, setLands] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,14 +115,14 @@ function MyLandsTab() {
   return (
     <>
       <Link to="/lands/new" style={{ textDecoration: "none" }}>
-        <button className="btn-primary" style={{ marginBottom: 14 }}>+ Post new land</button>
+        <button className="btn-primary" style={{ marginBottom: 14 }}>{t("ex_post_new_land")}</button>
       </Link>
-      {loading && <p className="meta">Loading...</p>}
+      {loading && <p className="meta">{t("loading")}</p>}
       {!loading && lands.length === 0 && (
         <div className="empty-state">
           <div className="glyph">🌾</div>
-          <h3>No lands posted yet</h3>
-          <p>List your grazing or fodder land so livestock owners nearby can find it.</p>
+          <h3>{t("ex_no_lands_posted_title")}</h3>
+          <p>{t("ex_list_your_land")}</p>
         </div>
       )}
       {lands.map((l) => (
@@ -132,8 +135,9 @@ function MyLandsTab() {
             )}
             <div>
               <div className="card-title">{l.title}</div>
-              <div className="meta">{l.village}, {l.district} · {l.acres} acres</div>
-              <div className="price" style={{ marginTop: 6 }}>₹{l.price}/{l.unit}</div>
+              <div className="meta">{l.village}, {l.district} · {tf("ex_n_acres", { n: l.acres })}</div>
+              <div className="price" style={{ marginTop: 6 }}>₹{l.price}/{unitLabel(t, l.unit)}</div>
+              {l.hidden === true && <span className="pill pill-red" style={{ marginTop: 6, display: "inline-block" }}>{t("ex_paused_by_team")}</span>}
             </div>
           </div>
         </Link>
@@ -168,8 +172,8 @@ export default function Lands({ initialTab = "discover" }) {
       />
       <div className="content">
         <div className="tabbar">
-          <button className={`tabbtn ${tab === "discover" ? "active" : ""}`} onClick={() => setTab("discover")}>Discover</button>
-          <button className={`tabbtn ${tab === "mine" ? "active" : ""}`} onClick={() => setTab("mine")}>My lands</button>
+          <button className={`tabbtn ${tab === "discover" ? "active" : ""}`} onClick={() => setTab("discover")}>{t("ex_discover")}</button>
+          <button className={`tabbtn ${tab === "mine" ? "active" : ""}`} onClick={() => setTab("mine")}>{t("ex_my_lands")}</button>
         </div>
         {tab === "discover" ? <DiscoverTab /> : <MyLandsTab />}
       </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { listAlerts } from "./alertsApi";
 import { getCurrentPosition, distanceKm } from "../../utils/geo";
+import { speciesLabel, severityLabel, errText } from "../../i18n/labels";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../i18n/LanguageContext";
 import { listMyNotifications } from "../notifications/notificationsApi";
@@ -12,7 +13,7 @@ import NotificationsSheet from "../notifications/NotificationsSheet";
 
 export default function AlertsList() {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, tf } = useLanguage();
   const nav = useNavigate();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +40,7 @@ export default function AlertsList() {
       const pos = await getCurrentPosition();
       setMyLoc(pos);
     } catch (err) {
-      setLocError(err.message);
+      setLocError(errText(t, err));
     } finally {
       setLocating(false);
     }
@@ -62,7 +63,7 @@ export default function AlertsList() {
       <AppBar
         variant="top"
         title={t("alerts_title")}
-        subtitle="Community outbreak awareness"
+        subtitle={t("ex_alerts_subtitle")}
         onMap={() => nav("/map")}
         onBell={() => setNotifOpen(true)}
         unread={unread > 0}
@@ -73,7 +74,7 @@ export default function AlertsList() {
         </Link>
 
         <button className={myLoc ? "btn-primary" : "btn-secondary"} style={{ marginBottom: 14 }} onClick={handleFindNearMe} disabled={locating}>
-          {locating ? "Finding your location..." : myLoc ? "✓ Sorted by distance from you" : "📍 Show nearest to me"}
+          {locating ? t("ex_finding_location") : myLoc ? t("ex_sorted_by_distance") : t("ex_show_nearest")}
         </button>
         {locError && <div className="error-box">{locError}</div>}
 
@@ -84,14 +85,14 @@ export default function AlertsList() {
               className={`chip ${filter === s ? "active" : ""}`}
               onClick={() => setFilter(s)}
             >
-              {s === "all" ? "All" : s[0].toUpperCase() + s.slice(1)}
+              {s === "all" ? t("ex_all") : severityLabel(t, s)}
             </button>
           ))}
         </div>
 
-        {loading && <p className="meta">Loading alerts...</p>}
+        {loading && <p className="meta">{t("ex_loading_alerts")}</p>}
         {!loading && filtered.length === 0 && (
-          <div className="empty-state"><div className="glyph">🚨</div><h3>No alerts here</h3><p>Nothing reported for this filter yet.</p></div>
+          <div className="empty-state"><div className="glyph">🚨</div><h3>{t("ex_no_alerts_title")}</h3><p>{t("ex_no_alerts_body")}</p></div>
         )}
         {filtered.map((a) => (
           <Link key={a.id} to={`/alerts/${a.id}`} style={{ textDecoration: "none", color: "inherit" }}>
@@ -100,9 +101,9 @@ export default function AlertsList() {
                 <span className={`severity-dot sev-${a.severity === "medium" ? "med" : a.severity}`} style={{ marginRight: 6 }} />
                 {a.disease}
               </div>
-              <div className="meta">{a.species} · {a.village}, {a.district}</div>
+              <div className="meta">{speciesLabel(t, a.species)} · {a.village}, {a.district}</div>
               {myLoc && a._dist !== null && (
-                <span className="pill pill-sky" style={{ marginTop: 6, display: "inline-block" }}>{a._dist.toFixed(1)} km away</span>
+                <span className="pill pill-sky" style={{ marginTop: 6, display: "inline-block" }}>{tf("ex_km_away", { n: a._dist.toFixed(1) })}</span>
               )}
             </div>
           </Link>

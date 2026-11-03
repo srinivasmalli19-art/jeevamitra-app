@@ -22,8 +22,13 @@ export function LanguageProvider({ children }) {
     return dict?.[key] || translations.en[key] || key;
   }
 
+  // v62: t() with values, e.g. tf("fp_km_away", { n: "3.2 km" }).
+  function tf(key, vars = {}) {
+    return t(key).replace(/\{(\w+)\}/g, (m, name) => (vars[name] !== undefined ? String(vars[name]) : m));
+  }
+
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t, languages: LANGUAGES }}>
+    <LanguageContext.Provider value={{ lang, setLang, t, tf, languages: LANGUAGES }}>
       {children}
     </LanguageContext.Provider>
   );

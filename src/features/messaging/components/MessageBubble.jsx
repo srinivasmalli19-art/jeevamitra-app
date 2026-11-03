@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { toMillis } from "../messaging.logic";
+import VoicePlayer from "../../../components/VoicePlayer"; // v62
+import PhotoViewer from "../../../components/PhotoViewer"; // v62
 
 function clockTime(ts) {
   const ms = toMillis(ts);
@@ -11,6 +14,7 @@ function clockTime(ts) {
 // bubbles also show a sent/read receipt.
 export default function MessageBubble({ message, mine }) {
   const time = clockTime(message.createdAt);
+  const [viewAt, setViewAt] = useState(null); // v62: open photo index
   const read = message.status === "read" || !!message.readAt;
 
   return (
@@ -25,9 +29,27 @@ export default function MessageBubble({ message, mine }) {
           color: mine ? "var(--paper)" : "var(--ink)",
         }}
       >
-        <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-          {message.text}
-        </p>
+        {/* v62: voice and photo messages; plain text messages are unchanged */}
+        {message.type === "voice" && message.media?.voice ? (
+          <VoicePlayer src={message.media.voice.url} durationSec={message.media.voice.durationSec} light={mine} />
+        ) : message.type === "image" && message.media?.images ? (
+          <>
+            <div className="chat-photos" style={{ gridTemplateColumns: message.media.images.length === 1 ? "1fr" : "1fr 1fr", width: 220 }}>
+              {message.media.images.map((im, i) => (
+                <img key={im.url} src={im.url} alt="" loading="lazy" onClick={() => setViewAt(i)}
+                  style={message.media.images.length === 1 ? { height: 180 } : undefined} />
+              ))}
+            </div>
+            {message.caption && (
+              <p style={{ margin: "6px 0 0", fontSize: 13.5, lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{message.caption}</p>
+            )}
+            {viewAt !== null && <PhotoViewer images={message.media.images} startIndex={viewAt} onClose={() => setViewAt(null)} />}
+          </>
+        ) : (
+          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+            {message.text}
+          </p>
+        )}
         <div
           style={{
             display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 5, marginTop: 3,

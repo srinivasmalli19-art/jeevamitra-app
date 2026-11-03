@@ -5,13 +5,14 @@ import { useLanguage } from "../../i18n/LanguageContext";
 import { getUserProfile } from "../auth/profileApi";
 import AppBar from "../../components/AppBar";
 import Avatar from "../../components/Avatar";
-import { useInteraction, useMessages, useSendMessage } from "./useMessaging";
+import { useInteraction, useMessages, useSendMessage, useSendMedia } from "./useMessaging";
 import { markInteractionRead } from "./messagingApi";
 import { otherParticipantId, isParticipant } from "./messaging.logic";
 import { useOnline } from "./useOnline";
 import PublicationContextCard from "./components/PublicationContextCard";
 import MessageBubble from "./components/MessageBubble";
 import MessageInput from "./components/MessageInput";
+import { askForPushSoon } from "../push/events"; // v62
 
 export default function ConversationScreen() {
   const { interactionId } = useParams();
@@ -24,6 +25,7 @@ export default function ConversationScreen() {
   const { messages, loading: msgLoading, error: msgError, loadOlder, loadingOlder, reachedStart } =
     useMessages(interactionId);
   const { send, sending, error: sendError, clearError } = useSendMessage(interactionId, user.uid);
+  const media = useSendMedia(interactionId, user.uid); // v62: voice / photos
 
   const [other, setOther] = useState(null);
   const bottomRef = useRef(null);
@@ -121,7 +123,7 @@ export default function ConversationScreen() {
         <div ref={bottomRef} />
       </div>
 
-      <MessageInput onSend={send} sending={sending} error={sendError} onClearError={clearError} />
+      <MessageInput onSend={async (txt) => { const ok = await send(txt); if (ok) askForPushSoon(); return ok; }} sending={sending} error={sendError} onClearError={clearError} media={media} />
     </div>
   );
 }

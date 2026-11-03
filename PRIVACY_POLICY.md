@@ -25,6 +25,32 @@ listing.
 **Photos:** If you upload a photo for a land or vet listing, that photo
 is stored and shown to other users of the app.
 
+**Field and herd posts (from version 1.4.0):** When you post a harvested
+field with crop residue, ask for a herd to stay on your field, or offer
+your herd, we store the post details (crop, acres, dates, price option,
+village, description), up to 5 photos, an optional voice note, and the
+location of the field or herd. Other users can see the post and its
+approximate distance from them.
+
+**Herd location (from version 1.4.0):** If you have an active "herd
+available" post, the app updates that post's location when you open the
+app or tap "Update herd location", so nearby farmers can find your herd.
+The app never tracks your location in the background, and stops updating
+it when you mark the post full or closed.
+
+**Chat messages, voice messages and photos:** Text, voice messages (up to
+2 minutes) and photos (up to 5 at a time) that you send in a chat are
+stored and shown only to the other person in that chat. The app asks for
+microphone permission only when you record a voice message, and camera
+permission only when you take a photo.
+
+**Notifications (from version 1.4.0):** If you allow notifications, we
+store a notification token for your phone and your notification settings
+(which alerts you want, the distance in km, quiet hours). We use them only
+to send you JeevaMitra alerts, such as a new chat message or a herd or
+field near you. You can switch alerts off in the app's Notification
+settings or in your phone's settings.
+
 **Content you post:** Land listings, booking requests, disease alert
 reports, and any text you type into the app are stored and may be shown
 to other users as part of the app's normal function (e.g., other farmers
@@ -37,8 +63,9 @@ displaying disease alerts to the community. We do not sell your
 information to third parties.
 
 ## Where data is stored
-Data is stored using Google Firebase (Firestore database and
-Authentication), a third-party cloud service. Firebase's own privacy
+Data is stored using Google Firebase (Firestore database, Cloud Storage
+for photos and voice messages, Authentication, Cloud Functions and Cloud
+Messaging for notifications), a third-party cloud service. Firebase's own privacy
 practices apply to how they process data on our behalf:
 https://firebase.google.com/support/privacy
 
@@ -50,8 +77,11 @@ system. We do not share your data with advertisers.
 
 ## Your choices
 You can edit your profile information at any time from within the app.
-To request deletion of your account and associated data, contact
-[your email address].
+You can delete a post at any time. You can delete your account from
+Settings → Delete account; this removes your profile, your land
+listings, your field and herd posts with their photos and voice notes,
+and your notification settings. You can also ask for deletion by
+contacting [your email address].
 
 ## Children's privacy
 This app is not directed at children and is not knowingly used to

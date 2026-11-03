@@ -40,7 +40,8 @@ export async function deleteVetProfile(vetId) {
 
 export async function listVets() {
   const snap = await getDocs(query(vetsCol, orderBy("createdAt", "desc")));
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  // v62: items paused from Central Admin (hidden: true) are not shown.
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((x) => x.hidden !== true);
 }
 
 export async function getVet(vetId) {

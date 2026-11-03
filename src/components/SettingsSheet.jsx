@@ -25,7 +25,7 @@ export default function SettingsSheet({ open, onClose }) {
 
   async function handleConfirmDelete() {
     if (!deletePassword) return;
-    if (!confirm("This permanently deletes your account and your own land listings. This cannot be undone. Continue?")) return;
+    if (!confirm(t("ex_delete_confirm"))) return;
     setDeleteBusy(true);
     try {
       await deleteAccount(deletePassword);
@@ -44,27 +44,27 @@ export default function SettingsSheet({ open, onClose }) {
         <div className="settings-row" onClick={() => setLangOpen(true)}>
           {t("settings_language")} <span className="chev">{current.nativeName} ›</span>
         </div>
-        <div className="settings-row">{t("settings_notifications")} <span className="chev">On ›</span></div>
-        <div className="settings-row">{t("settings_units")} <span className="chev">Metric ›</span></div>
+        <div className="settings-row" onClick={() => { onClose(); nav("/settings/notifications"); }}>{t("settings_notifications")} <span className="chev">›</span></div>
+        <div className="settings-row">{t("settings_units")} <span className="chev">{t("ex_metric")} ›</span></div>
         <div className="settings-row" onClick={handleLogout}>{t("settings_logout")} <span className="chev">›</span></div>
         <div style={{ marginTop: 18 }}>
           {!confirmingDelete ? (
             <button className="btn-danger" onClick={() => setConfirmingDelete(true)}>{t("delete_account")}</button>
           ) : (
             <div className="field">
-              <label>Confirm your password to permanently delete your account</label>
+              <label>{t("ex_confirm_password_delete")}</label>
               <input type="password" value={deletePassword} onChange={(e) => setDeletePassword(e.target.value)} />
               <div className="row" style={{ marginTop: 10 }}>
-                <button className="btn-secondary" onClick={() => { setConfirmingDelete(false); setDeletePassword(""); }} disabled={deleteBusy}>Cancel</button>
+                <button className="btn-secondary" onClick={() => { setConfirmingDelete(false); setDeletePassword(""); }} disabled={deleteBusy}>{t("cancel")}</button>
                 <button className="btn-danger" onClick={handleConfirmDelete} disabled={deleteBusy}>
-                  {deleteBusy ? "Deleting..." : "Confirm delete"}
+                  {deleteBusy ? t("ex_deleting") : t("ex_confirm_delete")}
                 </button>
               </div>
             </div>
           )}
         </div>
         <p style={{ textAlign: "center", fontFamily: "'JetBrains Mono',monospace", fontSize: 10.5, color: "var(--ink-soft)", marginTop: 16 }}>
-          JeevaMitra v1.0.0
+          JeevaMitra v1.4.0
         </p>
       </BottomSheet>
 

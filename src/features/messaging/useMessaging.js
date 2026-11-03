@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   watchUserInteractions, watchInteraction, watchLatestMessages,
   fetchOlderMessages, sendTextMessage, watchTotalUnread, PAGE_SIZE,
+  sendMediaMessage, // v62
 } from "./messagingApi";
 
 // Realtime list of the current user's conversations.
@@ -145,4 +146,32 @@ export function useSendMessage(interactionId, senderId) {
   }, [interactionId, senderId]);
 
   return { send, sending, error, clearError: () => setError(null) };
+}
+
+// v62: send a voice or photo message (see sendMediaMessage).
+export function useSendMedia(interactionId, senderId) {
+  const [sending, setSending] = useState(false);
+  const [progress, setProgress] = useState(null);
+  const [error, setError] = useState(null);
+  const inFlight = useRef(false);
+
+  const sendMedia = useCallback(async (payload) => {
+    if (inFlight.current) return false;
+    inFlight.current = true;
+    setSending(true);
+    setError(null);
+    try {
+      await sendMediaMessage({ interactionId, senderId, ...payload, onProgress: (n, total) => setProgress({ n, total }) });
+      return true;
+    } catch (err) {
+      setError(err);
+      return false;
+    } finally {
+      inFlight.current = false;
+      setSending(false);
+      setProgress(null);
+    }
+  }, [interactionId, senderId]);
+
+  return { sendMedia, sending, progress, error, clearError: () => setError(null) };
 }

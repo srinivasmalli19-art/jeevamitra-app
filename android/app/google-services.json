@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "360739375700",
+    "project_id": "jeevamitra",
+    "storage_bucket": "jeevamitra.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360739375700:android:3bddc2ca498360b41b3bc1",
+        "android_client_info": {
+          "package_name": "com.jeevamitra.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "360739375700-0qo9qrf7vrj2lni3iiimirrvu1qebvd7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jeevamitra.app",
+            "certificate_hash": "6deac209386dc7a349ecb9fff8351b973d03211d"
+          }
+        },
+        {
+          "client_id": "360739375700-emj1fr554rf8l8qabqkek4a3ral2kmsu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jeevamitra.app",
+            "certificate_hash": "7d8a2684931c8e2590ec5443ec412285381e62c7"
+          }
+        },
+        {
+          "client_id": "360739375700-01k15beblvkkk8n88io0ngvrgnvs3sqa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5jfwTsvShnTXIsY5d6BtQdQWNZnjNRNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "360739375700-01k15beblvkkk8n88io0ngvrgnvs3sqa.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "360739375700-1bkpmm99o1k3q9i57jdgv718dro4s8u5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jeevamitra.jeevamitra"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

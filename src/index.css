@@ -193,3 +193,53 @@ input, select, textarea{font-family:'Work Sans', sans-serif;}
    even though the map sits earlier in the DOM. isolation:isolate on
    .map-wrap contains all of that to its own subtree. */
 .leaflet-container{z-index:0;}
+
+/* v62: language badge in the app bar shows the current language */
+.lang-badge{font-size:16px; font-weight:700; color:var(--paper); line-height:1;
+  font-family:'Noto Sans Telugu','Noto Sans Devanagari',system-ui,sans-serif;}
+
+/* v62: crop picker grid with "?" safety buttons */
+.crop-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;}
+.crop-tile{position:relative; border:1.3px solid var(--line); border-radius:12px; background:var(--paper-card);}
+.crop-tile.active{border:2px solid var(--pasture); background:var(--pasture-pale);}
+.crop-main{display:flex; flex-direction:column; align-items:center; gap:4px; width:100%; padding:12px 4px 10px;
+  background:none; border:none; cursor:pointer; color:var(--ink);}
+.crop-emoji{font-size:24px; line-height:1;}
+.crop-name{font-size:12px; font-weight:600; text-align:center; line-height:1.25;}
+.crop-help{position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%;
+  border:1.3px solid var(--sky); background:var(--paper-card); color:var(--sky); font-weight:700; font-size:12px;
+  cursor:pointer; padding:0; line-height:19px;}
+/* v62: recording indicator */
+.rec-dot{width:12px; height:12px; border-radius:50%; background:var(--alert); flex:0 0 auto; animation:recpulse 1s infinite;}
+@keyframes recpulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* v62: segmented choice buttons (status, yes/no) */
+.seg{display:flex; gap:6px; flex-wrap:wrap;}
+.seg .chip{padding:9px 12px;}
+.field-error{color:var(--alert); font-size:12px; margin-top:5px; font-weight:600;}
+.warn-box{background:#FBEDD1; color:var(--marigold-deep); padding:10px 12px; border-radius:10px; font-size:13px; font-weight:600; margin-bottom:12px;}
+.clamp-2{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.check-row{display:flex !important; align-items:center; gap:10px; font-size:13.5px !important; color:var(--ink) !important; font-weight:600; cursor:pointer;}
+.check-row input{width:20px !important; height:20px; flex:0 0 auto; accent-color:var(--pasture);}
+/* v62: contact buttons and filters */
+.contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;}
+.contact-grid .btn-primary{grid-column:1 / -1;}
+.btn-link{display:flex; align-items:center; justify-content:center; text-decoration:none; text-align:center;}
+.filter-select{width:100%; padding:10px 11px; border-radius:11px; border:1.3px solid var(--line); background:var(--paper-card); font-size:13px; color:var(--ink);}
+/* v62: chat photo / voice */
+.chat-icon-btn{width:44px; height:44px; flex:0 0 auto; border-radius:11px; border:1.3px solid var(--line); background:var(--paper-card); font-size:20px; cursor:pointer;}
+.media-composer{padding:4px 0 10px;}
+.caption-input{width:100%; padding:11px 12px; border-radius:11px; border:1.3px solid var(--line); background:var(--paper-card); font-size:13.5px; margin-top:8px;}
+.chat-photos{display:grid; gap:4px; border-radius:10px; overflow:hidden;}
+.chat-photos img{width:100%; height:110px; object-fit:cover; display:block; cursor:pointer;}
+.photo-viewer{position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:400; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.photo-viewer img{max-width:100%; max-height:80vh; object-fit:contain;}
+.photo-viewer .pv-bar{position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 16px; color:#fff; font-weight:600;}
+.photo-viewer .pv-nav{position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.18); color:#fff; border:none; width:44px; height:44px; border-radius:50%; font-size:22px; cursor:pointer;}
+/* v62: in-app alert banner */
+.push-banner{position:fixed; top:10px; left:50%; transform:translateX(-50%); width:calc(100% - 24px); max-width:456px; z-index:450;
+  display:flex; gap:10px; align-items:flex-start; text-align:left; background:var(--ink); color:var(--paper); border:none; border-radius:14px;
+  padding:12px 14px; box-shadow:0 10px 30px rgba(0,0,0,.35); cursor:pointer; animation:pbin .25s ease;}
+.push-banner .pb-icon{font-size:20px; flex:0 0 auto;}
+.push-banner .pb-title{display:block; font-size:13.5px;}
+.push-banner .pb-body{display:block; font-size:12.5px; opacity:.85; margin-top:2px;}
+@keyframes pbin{from{transform:translate(-50%,-20px); opacity:0} to{transform:translate(-50%,0); opacity:1}}

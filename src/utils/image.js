@@ -13,10 +13,10 @@ export function compressImageToDataUrl(file, maxWidth = 800, quality = 0.6) {
   return new Promise((resolve, reject) => {
     if (!file) { resolve(null); return; }
     const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Couldn't read that image file."));
+    reader.onerror = () => reject(Object.assign(new Error("Couldn't read that image file."), { i18nKey: "ex_err_img_read" }));
     reader.onload = () => {
       const img = new Image();
-      img.onerror = () => reject(new Error("Couldn't process that image file."));
+      img.onerror = () => reject(Object.assign(new Error("Couldn't process that image file."), { i18nKey: "ex_err_img_process" }));
       img.onload = () => {
         const scale = Math.min(1, maxWidth / img.width);
         const canvas = document.createElement("canvas");
@@ -28,7 +28,7 @@ export function compressImageToDataUrl(file, maxWidth = 800, quality = 0.6) {
         // Rough safety check — Firestore's limit is 1MB per document,
         // and this photo shares that document with all the other fields.
         if (dataUrl.length > 700_000) {
-          reject(new Error("That photo is too large even after compression. Try a smaller or simpler photo."));
+          reject(Object.assign(new Error("That photo is too large even after compression. Try a smaller or simpler photo."), { i18nKey: "ex_err_img_large" }));
           return;
         }
         resolve(dataUrl);

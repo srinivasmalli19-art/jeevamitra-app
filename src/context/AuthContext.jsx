@@ -12,6 +12,9 @@ import { doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "firebase/firest
 import { auth, db } from "../firebase/init";
 import { isCurrentUserAdmin } from "../features/vets/vetsApi";
 import { listMyLands, deleteLand } from "../features/lands/landsApi";
+// v62: field posts, push tokens, alert settings
+import { listMyPosts, deletePost } from "../features/fields/fieldsApi";
+import { forgetThisDevice } from "../features/push/pushApi";
 
 const AuthContext = createContext(null);
 
@@ -59,6 +62,8 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
+    // v62: this phone stops receiving the logged-out user's alerts.
+    if (user) await forgetThisDevice(user.uid);
     return signOut(auth);
   }
 
@@ -89,6 +94,13 @@ export function AuthProvider({ children }) {
     await reauthenticateWithCredential(auth.currentUser, cred);
     const myLands = await listMyLands(user.uid);
     await Promise.all(myLands.map((l) => deleteLand(l.id)));
+    // v62: also delete the user's field / herd posts (with their photos and
+    // voice notes), this phone's push token and alert settings. The
+    // onUserDeleted Cloud Function removes anything left (other phones, chat files).
+    const myPosts = await listMyPosts(user.uid);
+    await Promise.all(myPosts.map((p) => deletePost(p)));
+    await forgetThisDevice(user.uid);
+    await deleteDoc(doc(db, "notificationSettings", user.uid)).catch(() => {});
     await deleteDoc(doc(db, "users", user.uid));
     await deleteUser(auth.currentUser);
   }

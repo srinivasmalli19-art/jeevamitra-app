@@ -1,4 +1,5 @@
 import { STATES, DISTRICTS_BY_STATE, OTHER_DISTRICT } from "../data/indiaLocations";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * A four-level location picker: State and District are real dropdowns
@@ -12,6 +13,7 @@ import { STATES, DISTRICTS_BY_STATE, OTHER_DISTRICT } from "../data/indiaLocatio
  * Props: value = { state, district, mandal, village }, onChange(next)
  */
 export default function LocationPicker({ value, onChange }) {
+  const { t, tf } = useLanguage();
   const districtOptions = DISTRICTS_BY_STATE[value.state];
 
   function set(key, val) {
@@ -24,24 +26,24 @@ export default function LocationPicker({ value, onChange }) {
   return (
     <>
       <div className="field">
-        <label>State</label>
+        <label>{t("ex_state")}</label>
         <select value={value.state || ""} onChange={(e) => set("state", e.target.value)}>
-          <option value="" disabled>Select state</option>
+          <option value="" disabled>{t("ex_select_state")}</option>
           {STATES.map((s) => <option key={s}>{s}</option>)}
         </select>
       </div>
 
       <div className="field">
-        <label>District</label>
+        <label>{t("ex_district")}</label>
         {districtOptions ? (
           <select value={value.district || ""} onChange={(e) => set("district", e.target.value)}>
-            <option value="" disabled>Select district</option>
+            <option value="" disabled>{t("ex_select_district")}</option>
             {districtOptions.map((d) => <option key={d}>{d}</option>)}
             <option value={OTHER_DISTRICT}>{OTHER_DISTRICT}</option>
           </select>
         ) : (
           <input
-            placeholder={value.state ? "Type your district" : "Select a state first"}
+            placeholder={value.state ? t("ex_type_district") : t("ex_select_state_first")}
             disabled={!value.state}
             value={value.district || ""}
             onChange={(e) => set("district", e.target.value)}
@@ -51,9 +53,9 @@ export default function LocationPicker({ value, onChange }) {
 
       {value.district === OTHER_DISTRICT && (
         <div className="field">
-          <label>District name</label>
+          <label>{t("ex_district_name")}</label>
           <input
-            placeholder="Type your district"
+            placeholder={t("ex_type_district")}
             value={value.districtOther || ""}
             onChange={(e) => set("districtOther", e.target.value)}
           />
@@ -62,12 +64,12 @@ export default function LocationPicker({ value, onChange }) {
 
       <div className="row">
         <div className="field">
-          <label>Mandal / Tehsil / Taluka</label>
-          <input placeholder="e.g. Gannavaram" value={value.mandal || ""} onChange={(e) => set("mandal", e.target.value)} />
+          <label>{t("ex_mandal")}</label>
+          <input placeholder={tf("ex_eg", { x: "Gannavaram" })} value={value.mandal || ""} onChange={(e) => set("mandal", e.target.value)} />
         </div>
         <div className="field">
-          <label>Village</label>
-          <input placeholder="e.g. Kandlagunta" value={value.village || ""} onChange={(e) => set("village", e.target.value)} />
+          <label>{t("ex_village")}</label>
+          <input placeholder={tf("ex_eg", { x: "Kandlagunta" })} value={value.village || ""} onChange={(e) => set("village", e.target.value)} />
         </div>
       </div>
     </>

@@ -8,11 +8,14 @@ import { OTHER_DISTRICT } from "../../data/indiaLocations";
 import { useToast } from "../../components/ToastContext";
 import AppBar from "../../components/AppBar";
 import BottomNav from "../../components/BottomNav";
+import { useLanguage } from "../../i18n/LanguageContext";
+import { speciesLabel, severityLabel, errText, SPECIES_OPTIONS } from "../../i18n/labels";
 
 export default function ReportAlert() {
   const { user, profile } = useAuth();
   const nav = useNavigate();
   const showToast = useToast();
+  const { t, tf } = useLanguage();
   const [form, setForm] = useState({
     disease: "", species: "Cattle", severity: "medium", symptoms: "",
     lat: null, lng: null,
@@ -34,7 +37,7 @@ export default function ReportAlert() {
       set("lat", lat);
       set("lng", lng);
     } catch (err) {
-      setLocError(err.message);
+      setLocError(errText(t, err));
     } finally {
       setLocating(false);
     }
@@ -47,7 +50,7 @@ export default function ReportAlert() {
       const district = form.district === OTHER_DISTRICT ? form.districtOther : form.district;
       const id = await createAlert(user.uid, profile?.name || "Someone", { ...form, district });
       nav(`/alerts/${id}`);
-      showToast("Alert reported to your community");
+      showToast(t("ex_alert_reported"));
     } finally {
       setBusy(false);
     }
@@ -55,37 +58,37 @@ export default function ReportAlert() {
 
   return (
     <div className="app-shell">
-      <AppBar variant="detail" title="Report disease alert" onBack={() => nav(-1)} />
+      <AppBar variant="detail" title={t("ex_report_alert_title")} onBack={() => nav(-1)} />
       <div className="content">
         <form onSubmit={handleSubmit}>
-          <div className="field"><label>Disease</label>
-            <input required placeholder="e.g. Foot and Mouth Disease" value={form.disease} onChange={(e) => set("disease", e.target.value)} />
+          <div className="field"><label>{t("ex_disease")}</label>
+            <input required placeholder={tf("ex_eg", { x: t("ex_fmd") })} value={form.disease} onChange={(e) => set("disease", e.target.value)} />
           </div>
           <div className="row">
-            <div className="field"><label>Species</label>
+            <div className="field"><label>{t("ex_species")}</label>
               <select value={form.species} onChange={(e) => set("species", e.target.value)}>
-                <option>Cattle</option><option>Buffalo</option><option>Goat/Sheep</option><option>Other</option>
+                {SPECIES_OPTIONS.map((s) => <option key={s} value={s}>{speciesLabel(t, s)}</option>)}
               </select>
             </div>
-            <div className="field"><label>Severity</label>
+            <div className="field"><label>{t("ex_severity")}</label>
               <select value={form.severity} onChange={(e) => set("severity", e.target.value)}>
-                <option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option>
+                {["low", "medium", "high"].map((s) => <option key={s} value={s}>{severityLabel(t, s)}</option>)}
               </select>
             </div>
           </div>
           <LocationPicker value={form} onChange={(next) => setForm((f) => ({ ...f, ...next }))} />
-          <div className="field"><label>Symptoms</label>
-            <textarea placeholder="Describe what you've observed..." value={form.symptoms} onChange={(e) => set("symptoms", e.target.value)} />
+          <div className="field"><label>{t("ex_symptoms")}</label>
+            <textarea placeholder={t("ex_describe_symptoms")} value={form.symptoms} onChange={(e) => set("symptoms", e.target.value)} />
           </div>
           <div className="field">
-            <label>Location (for "nearby" alerts)</label>
+            <label>{t("ex_location_nearby_alerts")}</label>
             <button type="button" className={form.lat ? "btn-primary" : "btn-secondary"} onClick={handleUseLocation} disabled={locating} style={{ width: "100%" }}>
-              {locating ? "Getting your location..." : form.lat ? `✓ Location captured (${form.lat.toFixed(4)}, ${form.lng.toFixed(4)})` : "📍 Use my current location"}
+              {locating ? t("ex_getting_location") : form.lat ? tf("ex_location_captured", { lat: form.lat.toFixed(4), lng: form.lng.toFixed(4) }) : t("ex_use_my_location")}
             </button>
             {locError && <div className="error-box" style={{ marginTop: 8 }}>{locError}</div>}
-            <p className="meta" style={{ marginTop: 6 }}>Optional, but lets nearby farmers see how close this outbreak is.</p>
+            <p className="meta" style={{ marginTop: 6 }}>{t("ex_alert_location_hint")}</p>
           </div>
-          <button className="btn-primary" disabled={busy}>{busy ? "Submitting..." : "Submit report"}</button>
+          <button className="btn-primary" disabled={busy}>{busy ? t("ex_submitting") : t("ex_submit_report")}</button>
         </form>
       </div>
       <BottomNav />

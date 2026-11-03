@@ -46,3 +46,8 @@ android/.idea/
 *.keystore
 *.jks
 key.properties
+
+.env
+.env.*
+!.env.example
+functions/node_modules
