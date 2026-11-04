@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "android:sync": "vite build && npx cap sync android",
     "android:open": "npx cap open android",
-    "test:rules": "npx -y firebase-tools@15 emulators:exec --only firestore,storage --project demo-jeevamitra-rules \"node --test tests/rules/\""
+    "test:rules": "npx -y firebase-tools@15 emulators:exec --only firestore,storage --project demo-jeevamitra-rules \"node --test tests/rules/rules.test.mjs\""
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
