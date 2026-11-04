@@ -29,6 +29,12 @@ android {
                 storePassword keystoreProperties['storePassword']
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
+            } else if (System.getenv("JM_KEYSTORE")) {
+                // Set by scripts/build-release.sh (passwords are typed at its prompt, never saved).
+                storeFile file(System.getenv("JM_KEYSTORE"))
+                storePassword System.getenv("JM_STORE_PASSWORD")
+                keyAlias System.getenv("JM_KEY_ALIAS")
+                keyPassword System.getenv("JM_KEY_PASSWORD")
             }
         }
     }

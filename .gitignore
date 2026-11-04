@@ -45,7 +45,7 @@ android/.idea/
 # since GitHub history is very hard to truly scrub.
 *.keystore
 *.jks
-key.properties
+key.properties*
 
 .env
 .env.*
